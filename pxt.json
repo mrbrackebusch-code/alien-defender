@@ -1,6 +1,6 @@
 {
     "name": "Alien Defender — Student Tutorial",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "description": "A nine-step MakeCode Arcade learning game about overlap events, sprite destruction, and a five-laser B-button burst.",
     "dependencies": {
         "device": "*"
