@@ -8,33 +8,41 @@
 
 ### @showdialog
 
-Earth's defense ship is ready—but its weapons are not. Program **A** to fire one laser, make the minefield and shields stop the alien attack, then turn **B** into the five-pulse burst that can break the mothership shield.
+Alien invaders are coming! Your ship is the last line of defense before Earth is overrun. But... it looks like someone forgot to actually program the weapons, so right now everyone is doomed? You can’t shoot the bad guys!
 
-**One ship. Five mines. Three shields. One mothership. Two buttons. Save Earth.**
+**In this assignment, you will:**
+
+Add the code that shoots lasers, defeats aliens, activates mines and shields, wins the game, and saves planet Earth.
+
+Move with the direction buttons. To practice one part of the battle, press **MENU**, choose an encounter with **↑ / ↓**, then press **A**. **MENU** closes the practice menu.
 
 ## 1. Shoot a Laser
 
 Before we do anything we need to get your ship equipped with some weapons. Good thing recent research has developed lasers that can travel through the vacuum of space. **Let's make the “A” button shoot.**
 
+### What to do
+
+Shoot one laser with **A**.
+
 ### Add this code
 
-☐ From ``||controller:Controller||``, drag an ``||controller:on [A] button [pressed]||`` container into an empty area of the workspace.
+- From ``||controller:Controller||``, drag an ``||controller:on [A] button [pressed]||`` container into an empty area of the workspace.
 
-☐ From ``||sprites:Sprites||``, snap a ``||variables(sprites):set [laser] to projectile [ ] from [mySprite] with vx [50] vy [50]||`` block inside the new container.
+- From ``||sprites:Sprites||``, snap a ``||variables(sprites):set [projectile] to projectile [ ] from [mySprite] with vx [50] vy [50]||`` block inside the new container.
 
-☐ Open the variable menu at the start of the new block and choose the supplied ``||variables(noclick):laser||`` variable.
+- Open the variable menu at the start of the new block and choose the supplied ``||variables(noclick):laser||`` variable.
 
-☐ Choose `patch_pulse` for the laser's image.
+- Click the laser's image box. Open **My Assets** and choose `patch_pulse`.
 
-☐ Change ``||variables(noclick):mySprite||`` to ``||variables(noclick):ship||``. Change **vx** to **100** and **vy** to **0**.
+- Change ``||variables(noclick):mySprite||`` to the supplied ``||variables(noclick):ship||``. Change **vx** to **200** and **vy** to **0**.
 
-### Test your code
+### What you should see
 
-☐ Start the game. Move your ship to the alien's height and press **A** once.
-
-### If your code works, you should see
+![One A press sends one laser from the ship to the right.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/01-laser.gif)
 
 One laser travels to the right from your ship each time you press **A**.
+
+**Play:** Move your ship and press **A** once.
 
 #### ~ tutorialhint
 
@@ -42,84 +50,114 @@ One laser travels to the right from your ship each time you press **A**.
 let laser: Sprite = null
 let ship: Sprite = null
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    laser = sprites.createProjectileFromSprite(assets.image`patch_pulse`, ship, 100, 0)
+    laser = sprites.createProjectileFromSprite(assets.image`patch_pulse`, ship, 200, 0)
 })
 ```
 
 ## 2. Make a Hit Matter
 
-Nothing happens when your laser hits the alien. Let's change that. **Make the laser and alien disappear when they collide.**
+Nothing happens when your laser hits a scout. Let's change that.
+
+### What to do
+
+Make the laser and scout disappear when they collide.
 
 ### Add this code
 
-☐ From ``||sprites:Sprites||``, drag an ``||sprites:on [sprite] of kind [Player] overlaps [otherSprite] of kind [Player]||`` event into an empty area of the workspace.
+- From ``||sprites:Sprites||``, drag an ``||sprites:on [sprite] of kind [Player] overlaps [otherSprite] of kind [Player]||`` event into an empty area of the workspace.
 
-☐ Change the first kind to **Projectile** and the second kind to **Enemy**.
+- Change the first kind from **Player** to **Projectile** and the second kind from **Player** to **Scout**.
 
-☐ Name the Projectile variable ``||variables(noclick):laser||`` and the Enemy variable ``||variables(noclick):alien||``. These names stand for the exact laser and alien that touched.
+- Snap a ``||sprites:destroy [mySprite]||`` block inside the overlap event.
 
-☐ Inside the event, add ``||sprites:destroy [mySprite]||``. Choose ``||variables(noclick):laser||``. Add a second destroy block underneath it and choose ``||variables(noclick):alien||``.
+- Drag ``||variables(noclick):sprite||`` from the header of this overlap event into the destroy block, replacing ``||variables(noclick):mySprite||``. This is the laser that touched the scout.
 
-### Test your code
+- Snap a second ``||sprites:destroy [mySprite]||`` block underneath the first one.
 
-☐ Start the game. Move your ship to the alien's height, press **A**, and let the laser hit the alien.
+- Drag ``||variables(noclick):otherSprite||`` from the same event header into the second destroy block. This is the scout that touched the laser.
 
-### If your code works, you should see
+The overlap event uses ``||variables(noclick):sprite||`` and ``||variables(noclick):otherSprite||`` for the **exact** items that touched. Keep those names; change the **kinds** to choose which things can meet.
 
-When the laser touches the alien, the laser disappears and the alien disappears. Then a massive wave of aliens enters the screen.
+### What you should see
+
+![A laser touches a scout, and both disappear.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/02-scout.gif)
+
+When the laser touches a scout, the laser and scout disappear.
+
+**Play:** **MENU → Scouts → A**. Line up with a scout and fire.
 
 #### ~ tutorialhint
 
 ```blocks
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (laser, alien) {
-    laser.destroy()
-    alien.destroy()
+namespace SpriteKind {
+    export const Scout = SpriteKind.create()
+}
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Scout, function (sprite, otherSprite) {
+    sprite.destroy()
+    otherSprite.destroy()
 })
 ```
 
 ## 3. Wake the Minefield
 
-That first alien was only the beginning. Good thing your allies have already placed five mines in the new wave's path. **Make each mine destroy the alien that touches it.**
+Those scouts were only the beginning. Five armored aliens are coming together, and your lasers cannot break their armor. Good thing your allies have already placed five mines in their path.
+
+### What to do
+
+Make each mine destroy the armored alien that touches it.
 
 ### Make this happen
 
-☐ When a sprite of kind **Mine** overlaps another sprite of kind **Enemy**, run code. Name the first sprite **mine** and the second sprite **alien**. Destroy **mine**. Destroy **alien**.
+- When a sprite of kind **Mine** overlaps another sprite of kind **ArmoredAlien**:
 
-### Test your code
+- Destroy the **mine**.
 
-☐ Start the game, defeat the first alien, and watch the wave reach the mines.
+- Destroy the **armored alien**.
 
-### If your code works, you should see
+### What you should see
 
-When an alien touches a mine, both disappear in an explosion. Once all five mines have stopped the wave, three shield layers move into place in front of your ship.
+![Five armored aliens reach five mines together; every touching pair explodes.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/03-minefield.gif)
+
+Each mine and the armored alien touching it disappear in an explosion.
+
+**Play:** **MENU → Minefield → A**. Watch the five armored aliens reach the mines together.
 
 #### ~ tutorialhint
 
 ```blocks
 namespace SpriteKind {
     export const Mine = SpriteKind.create()
+    export const ArmoredAlien = SpriteKind.create()
 }
-sprites.onOverlap(SpriteKind.Mine, SpriteKind.Enemy, function (mine, alien) {
-    mine.destroy()
-    alien.destroy()
+sprites.onOverlap(SpriteKind.Mine, SpriteKind.ArmoredAlien, function (sprite, otherSprite) {
+    sprite.destroy()
+    otherSprite.destroy()
 })
 ```
 
 ## 4. Make the Shields Defend You
 
-The wave is gone, but alien bolts are already flying toward you. Good thing Earth sent three shield layers to protect your ship. Right now, the bolts pass straight through them. **Make each shield stop one alien bolt.**
+The wave is gone, but alien bolts are already flying toward you. Good thing Earth sent three shield layers to protect your ship. Right now, the bolts pass straight through them.
+
+### What to do
+
+Make each shield stop one alien bolt.
 
 ### Make this happen
 
-☐ When the alien bolt overlaps the shield, destroy the bolt, then destroy the shield.
+- When an **alien bolt** overlaps a **shield**:
 
-### Test your code
+- Destroy the **bolt**.
 
-☐ Move into the path of the incoming bolts and let your shields take two hits.
+- Destroy the **shield**.
 
-### If your code works, you should see
+### What you should see
 
-When an alien bolt touches a shield, both disappear. Each hit removes one of the three bright shield marks at the top of the screen. After two hits, your allies send a shield charge across the battlefield.
+![An incoming alien bolt and one shield layer disappear; one shield mark goes dark.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/04-shields.gif)
+
+The bolt and one shield disappear. One shield mark goes dark.
+
+**Play:** **MENU → Shields → A**. Dodge the incoming bolts; your shields stop any that reach them.
 
 #### ~ tutorialhint
 
@@ -128,29 +166,39 @@ namespace SpriteKind {
     export const AlienBolt = SpriteKind.create()
     export const Shield = SpriteKind.create()
 }
-sprites.onOverlap(SpriteKind.AlienBolt, SpriteKind.Shield, function (bolt, shieldLayer) {
-    bolt.destroy()
-    shieldLayer.destroy()
+sprites.onOverlap(SpriteKind.AlienBolt, SpriteKind.Shield, function (sprite, otherSprite) {
+    sprite.destroy()
+    otherSprite.destroy()
 })
 ```
 
 ## 5. Recharge One Layer
 
-Only one shield layer is left. Your allies sent one shield charge to help. **Make the charge rebuild a shield layer when your ship collects it.**
+Your allies sent a shield charge to help. You can collect these during the battle—even while fighting the mothership.
+
+### What to do
+
+Make the charge rebuild a shield layer when your ship collects it.
+
+Your ship is a sprite of kind **Player**.
 
 ### Make this happen
 
-☐ When your ship overlaps a shield charge, destroy the shield charge and create a sprite of kind **Shield**.
+- When your **ship** touches a **shield charge**:
 
-☐ For the new sprite, use ``||variables(sprites):set [shield] to sprite [ ] of kind [Player]||``. Choose the supplied ``||variables(noclick):shield||`` variable, choose the `player_shield` image, and change its kind to **Shield**.
+- Destroy the **shield charge**.
 
-### Test your code
+- Create a new **shield**.
 
-☐ Fly into the moving shield charge.
+For the new shield, snap a ``||variables(sprites):set [mySprite] to sprite [ ] of kind [Player]||`` block underneath the destroy block. Choose the supplied ``||variables(noclick):shield||`` variable, the `player_shield` image from **My Assets**, and kind **Shield**.
 
-### If your code works, you should see
+### What you should see
 
-When your ship touches the charge, the charge disappears. One new shield layer snaps into the stack in front of your ship, and one bright shield mark comes back. Then the mothership arrives.
+![The ship collects a shield charge; the charge disappears and a new shield joins the stack.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/05-recharge.gif)
+
+The charge disappears. A new shield joins your ship, and one shield mark lights up.
+
+**Play:** **MENU → Recharge → A**. Fly into the shield charge.
 
 #### ~ tutorialhint
 
@@ -160,67 +208,117 @@ namespace SpriteKind {
     export const ShieldCharge = SpriteKind.create()
 }
 let shield: Sprite = null
-sprites.onOverlap(SpriteKind.Player, SpriteKind.ShieldCharge, function (player, shieldCharge) {
-    shieldCharge.destroy()
+sprites.onOverlap(SpriteKind.Player, SpriteKind.ShieldCharge, function (sprite, otherSprite) {
+    otherSprite.destroy()
     shield = sprites.create(assets.image`player_shield`, SpriteKind.Shield)
 })
 ```
 
 ## 6. Crack the Mothership Shield
 
-The mothership is here, protected by five shield cells. Your lasers cannot reach it while those cells are in the way. **Make each laser destroy the shield cell it touches.**
+The mothership is here, protected by four large shields. Your lasers cannot reach it while those shields are in the way.
+
+### What to do
+
+Make each laser destroy the mothership shield it touches.
 
 ### Make this happen
 
-☐ When a laser overlaps a mothership shield, destroy the laser, then destroy the mothership shield.
+- When a **laser** touches a **mothership shield**:
 
-### Test your code
+- Destroy the **laser**.
 
-☐ Line up with the mothership and press **A** once.
+- Destroy the **mothership shield**.
 
-### If your code works, you should see
+### What you should see
 
-Your laser and one shield cell disappear. Then the mothership repairs the cell. One laser can break one cell, but separate shots are too slow to keep all five down. **The ship needs a special weapon.**
+![One laser removes one mothership shield; after a delay, that shield repairs.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/06-mothership-shield.gif)
+
+Your laser and one mothership shield disappear. Then the shield repairs.
+
+**Play:** **MENU → Mothership → A**. Line up with a shield and press **A** once.
 
 #### ~ tutorialhint
 
 ```blocks
 namespace SpriteKind {
-    export const ShieldCell = SpriteKind.create()
+    export const MothershipShield = SpriteKind.create()
 }
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.ShieldCell, function (laser, mothershipShield) {
-    laser.destroy()
-    mothershipShield.destroy()
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.MothershipShield, function (sprite, otherSprite) {
+    sprite.destroy()
+    otherSprite.destroy()
 })
 ```
 
-## 7. Build the Five-Pulse Burst
+## 7. Defeat the Mothership
+
+The mothership shields can break. Now let's make sure the ship underneath them can be destroyed, too.
+
+### What to do
+
+Make a laser destroy the unprotected mothership.
+
+### Make this happen
+
+- When a **laser** reaches the **mothership**:
+
+- Destroy the **laser**.
+
+- Destroy the **mothership**.
+
+### What you should see
+
+![A laser reaches the exposed mothership, and both disappear.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/07-mothership.gif)
+
+The laser and unprotected mothership disappear.
+
+**Play:** **MENU → Exposed hull → A**. Fire a laser at the unprotected mothership. This practice encounter has no mothership shields.
+
+#### ~ tutorialhint
+
+```blocks
+namespace SpriteKind {
+    export const Mothership = SpriteKind.create()
+}
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Mothership, function (sprite, otherSprite) {
+    sprite.destroy()
+    otherSprite.destroy()
+})
+```
+
+## 8. Build the Five-Pulse Burst
+
+The mothership repairs its shields between separate shots. **The ship needs a special weapon.**
 
 The blocks we've been working with won't be enough. We need more. This time, make the **B-button event** create five lasers instead of just one.
 
+### What to do
+
+Make **B** fire five lasers one after another.
+
 A counted loop repeats the blocks inside it. Put one laser and one short pause inside a loop that repeats **5** times. The loop makes the complete burst without five copied stacks of blocks.
 
-### Add the new pieces
+### Make this happen
 
-☐ From ``||controller:Controller||``, drag an ``||controller:on [A] button [pressed]||`` container into an empty area of the workspace. Change **A** to **B**.
+- Add a **B-button event**, following the same process as your **A-button event**.
 
-☐ From ``||loops:Loops||``, put ``||loops:repeat [4] times||`` inside the **B** event and change **4** to **5**.
+- From ``||loops:Loops||``, put ``||loops:repeat [4] times||`` inside the **B** event and change **4** to **5**.
 
-☐ Inside the repeat block, create the same laser that already works for **A**: supplied variable ``||variables(noclick):laser||``, image `patch_pulse`, source ``||variables(noclick):ship||``, **vx 100**, and **vy 0**.
+- Inside the repeat block, create the same laser that already works for **A**: supplied variable ``||variables(noclick):laser||``, image `patch_pulse`, source ``||variables(noclick):ship||``, **vx 200**, and **vy 0**.
 
-☐ Directly underneath the laser, still inside the loop, add ``||loops:pause [100] ms||``.
+- Directly underneath the laser, still inside the loop, add ``||loops:pause [100] ms||``.
 
 ### Predict
 
-Before you test: how many separate lasers should leave the ship after one **B** press?
+How many separate lasers should leave the ship after one **B** press?
 
-### Test your code
+### What you should see
 
-☐ Return to the mothership, line up with its shield, and press **B** once.
+![One B press sends five lasers: four break the mothership shields and the fifth destroys the mothership.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/08-burst.gif)
 
-### If your code works, you should see
+Five lasers: four shields break, then the mothership is destroyed. **YOU WIN!**
 
-**A** breaks one shield cell, but it repairs before the next shot arrives. **B** sends a visible line of five laser pulses. The shield cells collapse one after another; the fifth hit destroys the mothership and the game displays **YOU WIN!**
+**Play:** **MENU → Mothership → A**. Line up with the mothership and press **B** once. Keep moving to dodge the bolts.
 
 ### Help
 
@@ -231,7 +329,7 @@ Before you test: how many separate lasers should leave the ship after one **B** 
 
 ### Explain
 
-How did the words “when the alien bolt overlaps the shield” help you know that you needed an event? How did using a loop reduce the number of blocks needed for the five-pulse burst?
+How did using a loop reduce the number of blocks needed for the five-pulse burst?
 
 #### ~ tutorialhint
 
@@ -240,7 +338,7 @@ let laser: Sprite = null
 let ship: Sprite = null
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     for (let index = 0; index < 5; index++) {
-        laser = sprites.createProjectileFromSprite(assets.image`patch_pulse`, ship, 100, 0)
+        laser = sprites.createProjectileFromSprite(assets.image`patch_pulse`, ship, 200, 0)
         pause(100)
     }
 })
@@ -256,11 +354,14 @@ Move with the direction buttons. Press **A** for one laser. Press **B** for the 
 
 ```template
 namespace SpriteKind {
+    export const Scout = SpriteKind.create()
+    export const ArmoredAlien = SpriteKind.create()
     export const Mine = SpriteKind.create()
     export const AlienBolt = SpriteKind.create()
     export const Shield = SpriteKind.create()
     export const ShieldCharge = SpriteKind.create()
-    export const ShieldCell = SpriteKind.create()
+    export const MothershipShield = SpriteKind.create()
+    export const Mothership = SpriteKind.create()
 }
 
 let laser: Sprite = null
@@ -271,9 +372,9 @@ function codeAlreadyDoneForYou() {
     laser = ship
     shield = ship
     ship = sprites.create(assets.image`drone_cyan`, SpriteKind.Player)
-    ship.setPosition(20, 60)
+    ship.setPosition(32, 120)
     ship.setStayInScreen(true)
-    controller.moveSprite(ship, 0, 80)
+    controller.moveSprite(ship, 0, 100)
     info.setLife(3)
     scene.setBackgroundImage(assets.image`void_patch_grid`)
     game.setGameOverMessage(true, "YOU WIN!")
@@ -288,14 +389,16 @@ codeAlreadyDoneForYou()
 ```
 
 ```customts
+namespace userconfig {
+    export const ARCADE_SCREEN_WIDTH = 320
+    export const ARCADE_SCREEN_HEIGHT = 240
+}
+
 namespace SpriteKind {
-    export const Mothership = SpriteKind.create()
-    export const AlienCannon = SpriteKind.create()
-    export const WaveEcho = SpriteKind.create()
-    export const ShieldMeter = SpriteKind.create()
     export const WorldEffect = SpriteKind.create()
 }
 
+// Supplied encounters, placement and feedback. Learner contact actions stay learner-owned.
 namespace voidPatchGame {
     const PHASE_OPENING = 0
     const PHASE_MINEFIELD = 1
@@ -304,955 +407,857 @@ namespace voidPatchGame {
     const PHASE_BOSS = 4
     const PHASE_VICTORY = 5
     let phase = PHASE_OPENING
-    let worldClearing = false
-    let victoryStarted = false
-
-    let activeAlien: Sprite = null
-    let openingProjectile: Sprite = null
-    let openingAlien: Sprite = null
-    let openingContactAt = 0
-
+    let initialized = false
+    let clearing = false
+    let startedAt = 0
+    let practice = -1
+    let scouts: Sprite[] = []
+    let scoutsDefeated = 0
     let mines: Sprite[] = []
-    let waveEchoes: Sprite[] = []
-    let activeMine: Sprite = null
-    let activeWaveAlien: Sprite = null
-    let mineContactMine: Sprite = null
-    let mineContactAlien: Sprite = null
-    let mineContactAt = 0
+    let attackers: Sprite[] = []
     let mineDetonations = 0
-    let nextWaveAt = 0
-
-    let alienCannon: Sprite = null
-    let shieldMeters: Sprite[] = []
-    let shieldContactBolt: Sprite = null
-    let shieldContactLayer: Sprite = null
-    let shieldContactAt = 0
-    let shieldHits = 0
-    let nextBoltAt = 0
-
-    let shieldCharge: Sprite = null
-    let chargeCandidate: Sprite = null
-    let chargeBaseline = 0
-    let chargeContactAt = 0
-
+    let charge: Sprite = null
+    let chargeAt = 0
+    let lastShieldCreatedAt = 0
+    let shieldCreationCount = 0
+    let chargeCreationBaseline = 0
     let mothership: Sprite = null
-    let shieldCells: Sprite[] = []
-    let bossProjectile: Sprite = null
-    let bossCell: Sprite = null
-    let bossCellIndex = -1
-    let bossContactAt = 0
-    let bossContactAccepted = false
+    let cells: Sprite[] = []
+    let repairAt: number[] = [0, 0, 0, 0]
     let bossHits = 0
-    let repairAtByIndex: number[] = [0, 0, 0, 0, 0]
+    let hullExposedUntil = 0
+    let bossMissingAt = 0
+    let victoryAt = 0
+    let hullPracticeComplete = false
+    let nextSalvoAt = 0
+    let warningUntil = 0
+    let warningY = 120
+    let salvos = 0
+    let lastPlayerHitAt = 0
+    let menuOpen = false
+    let menuChoice = 0
+    let pendingLaunch = -1
+    let launchAt = 0
+    let pausedAt = 0
+    let frozenSprites: Sprite[] = []
+    let frozenVx: number[] = []
+    let frozenVy: number[] = []
+    let wired = false
+    let note = ""
+    let noteUntil = 0
+    let nextPhase = -1
+    let transitionAt = 0
 
-    let recentProjectile: Sprite = null
-    let recentProjectileAt = 0
-    let recentBolt: Sprite = null
-    let recentBoltAt = 0
-    let recentShieldLayer: Sprite = null
-    let recentShieldLayerAt = 0
-    let recentBossCell: Sprite = null
-    let recentBossCellAt = 0
-    let learnerKindObserversWired = false
+    class Gone {
+        sprite: Sprite
+        kind: number
+        at: number
+        used = false
+        constructor(sprite: Sprite, kind: number) {
+            this.sprite = sprite
+            this.kind = kind
+            this.at = control.millis()
+        }
+    }
+    let gone: Gone[] = []
 
-    function currentPlayer(): Sprite {
+    function player(): Sprite {
         let players = sprites.allOfKind(SpriteKind.Player)
         return players.length == 1 ? players[0] : null
     }
-
-    function contains(kind: number, target: Sprite): boolean {
-        if (target == null) {
-            return false
-        }
-        for (let sprite of sprites.allOfKind(kind)) {
-            if (sprite == target) {
-                return true
-            }
-        }
-        return false
+    function exists(sprite: Sprite, kind: number): boolean {
+        return sprite != null && sprites.allOfKind(kind).indexOf(sprite) >= 0
     }
-
-    function near(first: Sprite, second: Sprite): boolean {
-        return first != null && second != null
-            && Math.abs(first.x - second.x) <= 14
-            && Math.abs(first.y - second.y) <= 14
+    function near(a: Sprite, b: Sprite): boolean {
+        return a != null && b != null
+            && Math.abs(a.x - b.x) <= (a.width + b.width) / 2 + 2
+            && Math.abs(a.y - b.y) <= (a.height + b.height) / 2 + 2
     }
-
-    function destroyKind(kind: number) {
-        for (let sprite of sprites.allOfKind(kind)) {
-            sprite.destroy()
-        }
+    function activeContact(a: Sprite, b: Sprite): boolean {
+        if (a == null || b == null) return false
+        // Read-only, pinned Arcade contact identity. physics.ts retains this exact pair while
+        // its overlap callback executes; sprite.ts invokes onDestroyed synchronously within it.
+        // Nearby independent deletions are therefore not mistaken for a learner overlap.
+        let higher = a.id > b.id ? a : b
+        let lower = higher == a ? b : a
+        return higher._overlappers.indexOf(lower.id) >= 0
     }
-
-    function makeEffect(x: number, y: number, fire: boolean) {
-        let effectSprite = sprites.create(assets.image`shield_flash`, SpriteKind.WorldEffect)
-        effectSprite.setPosition(x, y)
-        effectSprite.setFlag(SpriteFlag.GhostThroughSprites, true)
-        effectSprite.lifespan = 220
-        if (fire) {
-            effectSprite.startEffect(effects.fire, 180)
-        } else {
-            effectSprite.startEffect(effects.coolRadial, 160)
-        }
+    function say(message: string, duration: number) {
+        note = message
+        noteUntil = control.millis() + duration
     }
-
-    function shieldCellImage(index: number): Image {
-        if (index == 0) {
-            return assets.image`shield_cell_1`
-        } else if (index == 1) {
-            return assets.image`shield_cell_2`
-        } else if (index == 2) {
-            return assets.image`shield_cell_3`
-        } else if (index == 3) {
-            return assets.image`shield_cell_4`
-        }
-        return assets.image`shield_cell_5`
+    function flash(x: number, y: number, fire: boolean) {
+        let effect = sprites.create(assets.image`shield_flash`, SpriteKind.WorldEffect)
+        effect.setPosition(x, y)
+        effect.setFlag(SpriteFlag.GhostThroughSprites, true)
+        effect.lifespan = 220
+        effect.startEffect(fire ? effects.fire : effects.coolRadial, 180)
     }
-
-    function createOpeningAlien() {
-        if (phase != PHASE_OPENING || activeAlien != null || openingContactAt != 0 || currentPlayer() == null) {
-            return
-        }
-        activeAlien = sprites.create(assets.image`glitch`, SpriteKind.Enemy)
-        activeAlien.setPosition(148, 60)
-        activeAlien.setVelocity(-18, 0)
-        console.log("ALIEN_DEFENDER phase=opening alien=arrived")
+    function removeKind(kind: number) {
+        for (let sprite of sprites.allOfKind(kind)) sprite.destroy()
     }
-
-    function updateOpening() {
-        createOpeningAlien()
-        if (activeAlien != null) {
-            if (activeAlien.x <= 94 && activeAlien.vx < 0) {
-                activeAlien.vx = 10
-            } else if (activeAlien.x >= 132 && activeAlien.vx > 0) {
-                activeAlien.vx = -10
-            }
-        }
-        if (openingContactAt != 0) {
-            let projectileGone = !contains(SpriteKind.Projectile, openingProjectile)
-            let alienGone = !contains(SpriteKind.Enemy, openingAlien)
-            if (projectileGone && alienGone) {
-                let x = openingAlien.x
-                let y = openingAlien.y
-                openingProjectile = null
-                openingAlien = null
-                openingContactAt = 0
-                activeAlien = null
-                makeEffect(x, y, true)
-                beginMinefield()
-            } else if (control.millis() - openingContactAt > 700) {
-                openingProjectile = null
-                openingAlien = null
-                openingContactAt = 0
-                if (activeAlien == null || !contains(SpriteKind.Enemy, activeAlien)) {
-                    activeAlien = null
-                }
-            }
-        }
+    function clearEncounter() {
+        clearing = true
+        removeKind(SpriteKind.Scout)
+        removeKind(SpriteKind.ArmoredAlien)
+        removeKind(SpriteKind.Mine)
+        removeKind(SpriteKind.AlienBolt)
+        removeKind(SpriteKind.ShieldCharge)
+        removeKind(SpriteKind.MothershipShield)
+        removeKind(SpriteKind.Mothership)
+        removeKind(SpriteKind.Projectile)
+        removeKind(SpriteKind.WorldEffect)
+        clearing = false
+        gone = []
+        charge = null
+        mothership = null
+        chargeAt = 0
+        warningUntil = 0
+        salvos = 0
+        bossMissingAt = 0
+        victoryAt = 0
+        hullPracticeComplete = false
+        nextPhase = -1
+        voidPatchDashboard.resetForEncounter()
     }
-
+    function makeScout(index: number): Sprite {
+        let scout = sprites.create(assets.image`glitch`, SpriteKind.Scout)
+        scout.setPosition(216 + index * 34, 68 + index * 52)
+        scout.setVelocity(-24 - index * 5, index % 2 == 0 ? 12 : -12)
+        return scout
+    }
+    function beginOpening() {
+        clearEncounter()
+        phase = PHASE_OPENING
+        startedAt = control.millis()
+        scouts = []
+        scoutsDefeated = 0
+        for (let index = 0; index < 3; index++) scouts.push(makeScout(index))
+        say("SCOUTS APPROACH", 1800)
+        console.log("ALIEN_DEFENDER phase=opening scouts=3")
+    }
     function beginMinefield() {
+        clearEncounter()
         phase = PHASE_MINEFIELD
-        worldClearing = true
-        destroyKind(SpriteKind.Enemy)
-        worldClearing = false
-        activeAlien = null
+        startedAt = control.millis()
         mines = []
-        waveEchoes = []
+        attackers = []
         mineDetonations = 0
-        nextWaveAt = control.millis() + 350
         for (let index = 0; index < 5; index++) {
             let mine = sprites.create(assets.image`ally_mine`, SpriteKind.Mine)
-            mine.setPosition(70, 18 + index * 21)
+            mine.setPosition(152, 46 + index * 37)
             mines.push(mine)
+            let alien = sprites.create(assets.image`armored_alien`, SpriteKind.ArmoredAlien)
+            alien.setPosition(290, mine.y)
+            alien.setVelocity(-76, 0)
+            attackers.push(alien)
         }
-        for (let index = 0; index < 6; index++) {
-            let echo = sprites.create(assets.image`glitch`, SpriteKind.WaveEcho)
-            echo.setPosition(116 + index * 8, 14 + (index % 5) * 22)
-            echo.setVelocity(-8, 0)
-            echo.setFlag(SpriteFlag.GhostThroughSprites, true)
-            waveEchoes.push(echo)
-        }
-        console.log("ALIEN_DEFENDER phase=minefield mines=5 wave=massive")
+        say("ARMORED WAVE - ALLIED MINES AHEAD", 2000)
+        console.log("ALIEN_DEFENDER phase=minefield mines=5 attackers=5 simultaneous=true")
     }
-
-    function releaseWaveAlien() {
-        if (phase != PHASE_MINEFIELD || activeWaveAlien != null || mineDetonations >= 5 || control.millis() < nextWaveAt) {
-            return
-        }
-        activeMine = mines[mineDetonations]
-        if (activeMine == null || !contains(SpriteKind.Mine, activeMine)) {
-            return
-        }
-        activeWaveAlien = sprites.create(assets.image`glitch`, SpriteKind.Enemy)
-        activeWaveAlien.setPosition(156, activeMine.y)
-        activeWaveAlien.setVelocity(-34, 0)
-        console.log("ALIEN_DEFENDER minefield=lane-attack lane=" + mineDetonations)
+    function addInitialShields() {
+        clearing = true
+        removeKind(SpriteKind.Shield)
+        clearing = false
+        for (let index = 0; index < 3; index++) sprites.create(assets.image`player_shield`, SpriteKind.Shield)
+        positionShields()
     }
-
-    function updateMinefield() {
-        for (let echo of waveEchoes) {
-            if (echo.x < 91) {
-                echo.x = 158
-                echo.y = 14 + randint(0, 4) * 22
-            }
-        }
-        releaseWaveAlien()
-        if (mineContactAt != 0) {
-            let mineGone = !contains(SpriteKind.Mine, mineContactMine)
-            let alienGone = !contains(SpriteKind.Enemy, mineContactAlien)
-            if (mineGone && alienGone) {
-                let x = mineContactMine.x
-                let y = mineContactMine.y
-                mineDetonations += 1
-                activeMine = null
-                activeWaveAlien = null
-                mineContactMine = null
-                mineContactAlien = null
-                mineContactAt = 0
-                nextWaveAt = control.millis() + 360
-                makeEffect(x, y, true)
-                music.playTone(165 + mineDetonations * 28, 55)
-                console.log("ALIEN_DEFENDER mine=legitimate-detonation count=" + mineDetonations)
-                if (mineDetonations == 5) {
-                    beginShieldDefense()
-                }
-            } else if (control.millis() - mineContactAt > 700) {
-                mineContactMine = null
-                mineContactAlien = null
-                mineContactAt = 0
-            }
-        }
-        if (activeWaveAlien != null && !contains(SpriteKind.Enemy, activeWaveAlien)) {
-            activeWaveAlien = null
-            nextWaveAt = control.millis() + 260
-        } else if (activeWaveAlien != null && activeWaveAlien.x < 38) {
-            activeWaveAlien.setPosition(156, activeMine.y)
-            scene.cameraShake(2, 100)
-            console.log("ALIEN_DEFENDER minefield=inert-contact-retry")
-        }
-    }
-
-    function createShieldLayer(): Sprite {
-        return sprites.create(assets.image`player_shield`, SpriteKind.Shield)
-    }
-
-    function createShieldMeter() {
-        shieldMeters = []
-        for (let index = 0; index < 3; index++) {
-            let meter = sprites.create(assets.image`shield_ui_off`, SpriteKind.ShieldMeter)
-            meter.setPosition(8 + index * 8, 8)
-            meter.setFlag(SpriteFlag.GhostThroughSprites, true)
-            meter.z = 100
-            shieldMeters.push(meter)
-        }
-    }
-
-    function shieldCountNow(): number {
-        return sprites.allOfKind(SpriteKind.Shield).length
-    }
-
-    function updateShieldStack() {
-        let player = currentPlayer()
+    function positionShields() {
+        let ship = player()
+        if (ship == null) return
         let layers = sprites.allOfKind(SpriteKind.Shield)
-        if (player != null) {
-            for (let index = 0; index < layers.length; index++) {
-                layers[index].setPosition(player.x + 13 + index * 6, player.y)
-            }
-        }
-        for (let index = 0; index < shieldMeters.length; index++) {
-            if (index < layers.length) {
-                shieldMeters[index].setImage(assets.image`shield_ui_on`)
-            } else {
-                shieldMeters[index].setImage(assets.image`shield_ui_off`)
-            }
-        }
+        for (let index = 0; index < layers.length; index++) layers[index].setPosition(ship.x + 18 + index * 9, ship.y)
     }
-
-    function beginShieldDefense() {
+    function beginDefense() {
+        clearEncounter()
         phase = PHASE_DEFENSE
-        worldClearing = true
-        destroyKind(SpriteKind.Enemy)
-        destroyKind(SpriteKind.WaveEcho)
-        worldClearing = false
-        activeWaveAlien = null
-        for (let index = 0; index < 3; index++) {
-            createShieldLayer()
-        }
-        createShieldMeter()
-        alienCannon = sprites.create(assets.image`drone_ember`, SpriteKind.AlienCannon)
-        alienCannon.setPosition(143, 60)
-        alienCannon.setVelocity(0, 7)
-        shieldHits = 0
-        nextBoltAt = control.millis() + 650
-        updateShieldStack()
-        console.log("ALIEN_DEFENDER phase=defense physical-shields=3")
+        startedAt = control.millis()
+        addInitialShields()
+        nextSalvoAt = control.millis() + 900
+        say("INCOMING SALVO", 1800)
+        console.log("ALIEN_DEFENDER phase=defense shields=3")
     }
-
-    function updateAlienCannon() {
-        if (alienCannon == null) {
-            return
-        }
-        if (alienCannon.y < 28) {
-            alienCannon.vy = 7
-        } else if (alienCannon.y > 92) {
-            alienCannon.vy = -7
-        }
-    }
-
-    function fireAlienBolt(source: Sprite) {
-        if (source == null || sprites.allOfKind(SpriteKind.AlienBolt).length != 0) {
-            return
-        }
-        let bolt = sprites.create(assets.image`alien_bolt`, SpriteKind.AlienBolt)
-        bolt.setPosition(source.x - 12, source.y)
-        bolt.setVelocity(-42, 0)
-        bolt.setFlag(SpriteFlag.AutoDestroy, true)
-        console.log("ALIEN_DEFENDER bolt=fired")
-    }
-
-    function updateDefense() {
-        updateAlienCannon()
-        updateShieldStack()
-        if (control.millis() >= nextBoltAt) {
-            fireAlienBolt(alienCannon)
-            nextBoltAt = control.millis() + 1500
-        }
-        if (shieldContactAt != 0) {
-            let boltGone = !contains(SpriteKind.AlienBolt, shieldContactBolt)
-            let layerGone = !contains(SpriteKind.Shield, shieldContactLayer)
-            if (boltGone && layerGone) {
-                let x = shieldContactLayer.x
-                let y = shieldContactLayer.y
-                shieldHits += 1
-                shieldContactBolt = null
-                shieldContactLayer = null
-                shieldContactAt = 0
-                makeEffect(x, y, false)
-                scene.cameraShake(3, 120)
-                console.log("ALIEN_DEFENDER shield=layer-down remaining=" + shieldCountNow())
-                if (shieldHits == 2) {
-                    beginRecharge()
-                }
-            } else if (control.millis() - shieldContactAt > 700) {
-                shieldContactBolt = null
-                shieldContactLayer = null
-                shieldContactAt = 0
-            }
-        }
-    }
-
     function spawnCharge() {
-        if (shieldCharge != null && contains(SpriteKind.ShieldCharge, shieldCharge)) {
-            return
-        }
-        shieldCharge = sprites.create(assets.image`shield_charge`, SpriteKind.ShieldCharge)
-        shieldCharge.setPosition(20, 14)
-        shieldCharge.setVelocity(0, 18)
+        if (exists(charge, SpriteKind.ShieldCharge)) return
+        let ship = player()
+        charge = sprites.create(assets.image`shield_charge`, SpriteKind.ShieldCharge)
+        charge.setPosition(32, ship == null || ship.y > 120 ? 74 : 172)
+        charge.setVelocity(0, ship == null || ship.y > 120 ? 16 : -16)
+        chargeCreationBaseline = shieldCreationCount
         console.log("ALIEN_DEFENDER recharge=available")
     }
-
     function beginRecharge() {
         phase = PHASE_RECHARGE
-        destroyKind(SpriteKind.AlienBolt)
-        if (alienCannon != null) {
-            alienCannon.setVelocity(0, 0)
-        }
-        chargeCandidate = null
-        chargeContactAt = 0
+        startedAt = control.millis()
         spawnCharge()
-        console.log("ALIEN_DEFENDER phase=recharge physical-shields=" + shieldCountNow())
+        say("ALLIED SHIELD CHARGE", 1600)
+        console.log("ALIEN_DEFENDER phase=recharge")
     }
-
-    function updateRecharge() {
-        updateShieldStack()
-        if (shieldCharge != null && contains(SpriteKind.ShieldCharge, shieldCharge)) {
-            if (shieldCharge.y < 14) {
-                shieldCharge.vy = 18
-            } else if (shieldCharge.y > 106) {
-                shieldCharge.vy = -18
-            }
-        }
-        if (chargeContactAt != 0) {
-            let chargeGone = !contains(SpriteKind.ShieldCharge, chargeCandidate)
-            let layerCreated = shieldCountNow() == chargeBaseline + 1
-            if (chargeGone && layerCreated) {
-                chargeCandidate = null
-                chargeContactAt = 0
-                shieldCharge = null
-                updateShieldStack()
-                console.log("ALIEN_DEFENDER recharge=legitimate shields=" + shieldCountNow())
-                beginBoss(false)
-            } else if (control.millis() - chargeContactAt > 800) {
-                chargeCandidate = null
-                chargeContactAt = 0
-                if (chargeGone) {
-                    shieldCharge = null
-                    spawnCharge()
-                }
-            }
-        }
+    function cellImage(index: number): Image {
+        if (index == 0) return assets.image`shield_cell_1`
+        if (index == 1) return assets.image`shield_cell_2`
+        if (index == 2) return assets.image`shield_cell_3`
+        return assets.image`shield_cell_4`
     }
-
-    function positionBossCells() {
-        if (mothership == null) {
-            return
-        }
-        for (let index = 0; index < shieldCells.length; index++) {
-            let cell = shieldCells[index]
-            if (cell != null && contains(SpriteKind.ShieldCell, cell)) {
-                cell.setPosition(mothership.x - 48 + index * 7, mothership.y)
-            }
-        }
+    function makeCell(index: number) {
+        cells[index] = sprites.create(cellImage(index), SpriteKind.MothershipShield)
+        repairAt[index] = 0
     }
-
-    function createBossCell(index: number): Sprite {
-        let cell = sprites.create(shieldCellImage(index), SpriteKind.ShieldCell)
-        shieldCells[index] = cell
-        return cell
-    }
-
-    function armBossRepair(index: number, delay: number) {
-        if (index >= 0 && index < 5 && repairAtByIndex[index] == 0) {
-            repairAtByIndex[index] = control.millis() + delay
-            console.log("ALIEN_DEFENDER boss=cell-repair-armed index=" + index)
+    function positionBoss() {
+        if (!exists(mothership, SpriteKind.Mothership)) return
+        for (let index = 0; index < cells.length; index++) {
+            if (exists(cells[index], SpriteKind.MothershipShield)) cells[index].setPosition(mothership.x - 98 + index * 14, mothership.y)
         }
+        mothership.setFlag(SpriteFlag.GhostThroughSprites, practice != 5 && (bossShieldCount() > 0 || hullExposedUntil == 0))
     }
-
-    function findUnobservedBossDamage() {
-        for (let index = 0; index < shieldCells.length; index++) {
-            let cell = shieldCells[index]
-            if (cell != null && !contains(SpriteKind.ShieldCell, cell)
-                && (bossContactAt == 0 || bossCell != cell)) {
-                shieldCells[index] = null
-                armBossRepair(index, 360)
-            }
-        }
-    }
-
-    function resetBossShield() {
-        destroyKind(SpriteKind.ShieldCell)
-        shieldCells = [null, null, null, null, null]
-        for (let index = 0; index < 5; index++) {
-            createBossCell(index)
-        }
-        bossHits = 0
-        repairAtByIndex = [0, 0, 0, 0, 0]
-        positionBossCells()
-    }
-
-    function resetPlayerDefense() {
-        destroyKind(SpriteKind.Shield)
-        for (let index = 0; index < 3; index++) {
-            createShieldLayer()
-        }
-        updateShieldStack()
-    }
-
-    function beginBoss(restarting: boolean) {
-        phase = PHASE_BOSS
-        worldClearing = true
-        destroyKind(SpriteKind.AlienBolt)
-        destroyKind(SpriteKind.AlienCannon)
-        destroyKind(SpriteKind.ShieldCharge)
-        destroyKind(SpriteKind.Mothership)
-        destroyKind(SpriteKind.ShieldCell)
-        worldClearing = false
-        alienCannon = null
-        shieldCharge = null
-        bossProjectile = null
-        bossCell = null
-        bossCellIndex = -1
-        bossContactAt = 0
-        bossContactAccepted = false
-        if (restarting) {
-            info.setLife(3)
-            resetPlayerDefense()
-        }
+    function createMothership() {
         mothership = sprites.create(assets.image`mothership`, SpriteKind.Mothership)
-        mothership.setPosition(144, 60)
-        mothership.setVelocity(0, 2)
-        resetBossShield()
-        nextBoltAt = control.millis() + 1100
-        console.log("ALIEN_DEFENDER phase=boss state=" + (restarting ? "retry" : "arrived") + " cells=5")
+        mothership.setPosition(270, 120)
+        mothership.setVelocity(0, 10)
+        mothership.setFlag(SpriteFlag.GhostThroughSprites, practice != 5)
     }
-
-    function indexOfBossCell(cell: Sprite): number {
-        for (let index = 0; index < shieldCells.length; index++) {
-            if (shieldCells[index] == cell) {
-                return index
-            }
+    function beginBoss() {
+        clearEncounter()
+        phase = PHASE_BOSS
+        startedAt = control.millis()
+        bossHits = 0
+        hullExposedUntil = 0
+        createMothership()
+        cells = [null, null, null, null]
+        repairAt = [0, 0, 0, 0]
+        if (practice != 5) {
+            for (let index = 0; index < 4; index++) makeCell(index)
         }
-        return -1
+        positionBoss()
+        nextSalvoAt = control.millis() + 1800
+        chargeAt = control.millis() + 800
+        say(practice == 5 ? "EXPOSED HULL PRACTICE" : "MOTHERSHIP - FOUR SHIELDS, ONE HULL", 2200)
+        console.log("ALIEN_DEFENDER phase=boss shields=" + bossShieldCount() + " hull=1")
     }
-
     function beginVictory() {
-        if (victoryStarted || mothership == null) {
-            return
-        }
-        victoryStarted = true
+        // The learner already destroyed the hull in Projectile-Mothership overlap.
         phase = PHASE_VICTORY
-        destroyKind(SpriteKind.AlienBolt)
-        let defeated = mothership
-        mothership = null
-        defeated.destroy(effects.fire, 500)
-        scene.cameraShake(8, 420)
-        music.playTone(523, 80)
-        music.playTone(659, 80)
-        music.playTone(784, 120)
-        pause(480)
-        game.gameOver(true)
+        victoryAt = control.millis() + 900
+        clearing = true
+        removeKind(SpriteKind.AlienBolt)
+        clearing = false
+        flash(270, 120, true)
+        scene.cameraShake(6, 350)
+        say("EARTH IS SAFE!", 1000)
+        console.log("ALIEN_DEFENDER victory=learner-hull-contact")
     }
-
-    function resolveBossContact() {
-        if (bossContactAt == 0) {
-            return
-        }
-        let projectileGone = !contains(SpriteKind.Projectile, bossProjectile)
-        let cellGone = !contains(SpriteKind.ShieldCell, bossCell)
-        if (projectileGone && cellGone) {
-            let index = bossCellIndex
-            let x = bossCell.x
-            let y = bossCell.y
-            shieldCells[index] = null
-            bossProjectile = null
-            bossCell = null
-            bossCellIndex = -1
-            bossContactAt = 0
-            makeEffect(x, y, false)
-            if (bossContactAccepted) {
+    function completedPair(first: Sprite, second: Sprite, kind: number) {
+        if (kind == SpriteKind.Scout && phase == PHASE_OPENING) {
+            let index = scouts.indexOf(second)
+            if (index < 0) return
+            scouts[index] = null
+            scoutsDefeated += 1
+            flash(second.x, second.y, true)
+            console.log("ALIEN_DEFENDER scout=defeated count=" + scoutsDefeated)
+            if (scoutsDefeated == 3) { nextPhase = PHASE_MINEFIELD; transitionAt = control.millis() + 400 }
+        } else if (kind == SpriteKind.ArmoredAlien && phase == PHASE_MINEFIELD) {
+            let index = attackers.indexOf(second)
+            let mineIndex = mines.indexOf(first)
+            if (index < 0 || mineIndex < 0) return
+            attackers[index] = null
+            mines[mineIndex] = null
+            mineDetonations += 1
+            flash(second.x, second.y, true)
+            console.log("ALIEN_DEFENDER mine=detonated count=" + mineDetonations)
+            if (mineDetonations == 5) { nextPhase = PHASE_DEFENSE; transitionAt = control.millis() + 500 }
+        } else if (kind == SpriteKind.Shield) {
+            flash(second.x, second.y, false)
+            console.log("ALIEN_DEFENDER shield=intercept remaining=" + shieldCount())
+        } else if (kind == SpriteKind.MothershipShield && phase == PHASE_BOSS) {
+            let index = cells.indexOf(second)
+            if (index < 0) return
+            let accepted = voidPatchDashboard.claimBurstHit(first)
+            if (accepted) {
+                cells[index] = null
                 bossHits += 1
-                music.playTone(330 + bossHits * 55, 55)
-                console.log("ALIEN_DEFENDER boss=accepted-cell count=" + bossHits)
-                if (bossHits == 5) {
-                    beginVictory()
+                if (bossHits == 4 && bossShieldCount() == 0) {
+                    hullExposedUntil = control.millis() + 1700
+                    say("HULL EXPOSED!", 1000)
+                    positionBoss()
                 }
             } else {
-                armBossRepair(index, 360)
-                music.playTone(110, 45)
+                repairAt[index] = control.millis() + 350
+                say("MOTHERSHIP SHIELD RECHARGING", 600)
             }
-            bossContactAccepted = false
-        } else if (control.millis() - bossContactAt > 800) {
-            if (cellGone && bossCellIndex >= 0) {
-                shieldCells[bossCellIndex] = null
-                armBossRepair(bossCellIndex, 240)
+            flash(second.x, second.y, false)
+            console.log("ALIEN_DEFENDER boss=shield-contact accepted=" + accepted + " remaining=" + bossShieldCount())
+        } else if (kind == SpriteKind.Mothership && phase == PHASE_BOSS) {
+            if (practice == 5) {
+                hullPracticeComplete = true
+                flash(second.x, second.y, true)
+                say("HULL HIT - MENU TO REPLAY", 60000)
+                console.log("ALIEN_DEFENDER practice=hull-hit campaign-victory=false")
+            } else if (hullExposedUntil > control.millis() && bossShieldCount() == 0 && voidPatchDashboard.claimBurstHit(first)) {
+                bossHits += 1
+                beginVictory()
             }
-            bossProjectile = null
-            bossCell = null
-            bossCellIndex = -1
-            bossContactAt = 0
-            bossContactAccepted = false
         }
     }
-
-    function updateBoss() {
-        updateShieldStack()
-        if (mothership == null) {
-            return
-        }
-        if (voidPatchDashboard.observedBurstCount() > 0) {
-            mothership.vy = 0
-        } else if (mothership.y < 30) {
-            mothership.vy = 2
-        } else if (mothership.y > 90) {
-            mothership.vy = -2
-        }
-        findUnobservedBossDamage()
-        positionBossCells()
-        if (shieldContactAt != 0) {
-            let boltGone = !contains(SpriteKind.AlienBolt, shieldContactBolt)
-            let layerGone = !contains(SpriteKind.Shield, shieldContactLayer)
-            if (boltGone && layerGone) {
-                makeEffect(shieldContactLayer.x, shieldContactLayer.y, false)
-                shieldContactBolt = null
-                shieldContactLayer = null
-                shieldContactAt = 0
-            } else if (control.millis() - shieldContactAt > 700) {
-                shieldContactBolt = null
-                shieldContactLayer = null
-                shieldContactAt = 0
+    function observeDestroyed(sprite: Sprite, kind: number) {
+        if (clearing || menuOpen || phase == PHASE_VICTORY) return
+        let record = new Gone(sprite, kind)
+        gone.push(record)
+        for (let other of gone) {
+            if (other == record || other.used || Math.abs(record.at - other.at) > 160
+                || !near(sprite, other.sprite) || !activeContact(sprite, other.sprite)) continue
+            let first: Gone = null
+            let second: Gone = null
+            if (kind == SpriteKind.Projectile || kind == SpriteKind.Mine || kind == SpriteKind.AlienBolt) { first = record; second = other }
+            else { first = other; second = record }
+            let matches = first.kind == SpriteKind.Projectile
+                && (second.kind == SpriteKind.Scout || second.kind == SpriteKind.MothershipShield || second.kind == SpriteKind.Mothership)
+                || first.kind == SpriteKind.Mine && second.kind == SpriteKind.ArmoredAlien
+                || first.kind == SpriteKind.AlienBolt && second.kind == SpriteKind.Shield
+            if (matches) {
+                first.used = true
+                second.used = true
+                completedPair(first.sprite, second.sprite, second.kind)
+                break
             }
-        }
-        resolveBossContact()
-        for (let index = 0; index < repairAtByIndex.length; index++) {
-            if (repairAtByIndex[index] != 0 && control.millis() >= repairAtByIndex[index]) {
-                let repaired = createBossCell(index)
-                repaired.setPosition(mothership.x - 48 + index * 7, mothership.y)
-                makeEffect(repaired.x, repaired.y, false)
-                console.log("ALIEN_DEFENDER boss=cell-repaired index=" + index)
-                repairAtByIndex[index] = 0
-            }
-        }
-        if (control.millis() >= nextBoltAt) {
-            fireAlienBolt(mothership)
-            nextBoltAt = control.millis() + 1700
         }
     }
-
-    sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile, alien) {
-        if (phase == PHASE_OPENING && openingContactAt == 0) {
-            openingProjectile = projectile
-            openingAlien = alien
-            openingContactAt = control.millis()
-            console.log("ALIEN_DEFENDER opening=contact-candidate")
-        }
-    })
-
-    function wireLearnerKindObservers() {
-        if (learnerKindObserversWired) {
-            return
-        }
-        learnerKindObserversWired = true
-
-        sprites.onOverlap(SpriteKind.Mine, SpriteKind.Enemy, function (mine, alien) {
-            if (phase == PHASE_MINEFIELD && mine == activeMine && alien == activeWaveAlien && mineContactAt == 0) {
-                mineContactMine = mine
-                mineContactAlien = alien
-                mineContactAt = control.millis()
-            }
+    function wireObservers() {
+        if (wired) return
+        wired = true
+        sprites.onDestroyed(SpriteKind.Projectile, function (sprite) { observeDestroyed(sprite, SpriteKind.Projectile) })
+        sprites.onDestroyed(SpriteKind.Scout, function (sprite) { observeDestroyed(sprite, SpriteKind.Scout) })
+        sprites.onDestroyed(SpriteKind.Mine, function (sprite) { observeDestroyed(sprite, SpriteKind.Mine) })
+        sprites.onDestroyed(SpriteKind.ArmoredAlien, function (sprite) { observeDestroyed(sprite, SpriteKind.ArmoredAlien) })
+        sprites.onDestroyed(SpriteKind.AlienBolt, function (sprite) { observeDestroyed(sprite, SpriteKind.AlienBolt) })
+        sprites.onDestroyed(SpriteKind.Shield, function (sprite) { observeDestroyed(sprite, SpriteKind.Shield) })
+        sprites.onDestroyed(SpriteKind.MothershipShield, function (sprite) { observeDestroyed(sprite, SpriteKind.MothershipShield) })
+        sprites.onDestroyed(SpriteKind.Mothership, function (sprite) { observeDestroyed(sprite, SpriteKind.Mothership) })
+        sprites.onCreated(SpriteKind.Shield, function () { lastShieldCreatedAt = control.millis(); shieldCreationCount += 1 })
+        sprites.onDestroyed(SpriteKind.ShieldCharge, function (sprite) {
+            if (clearing || menuOpen || (phase != PHASE_RECHARGE && phase != PHASE_BOSS)
+                || !activeContact(player(), sprite)) return
+            chargeAt = control.millis() + 220
         })
-
-        sprites.onOverlap(SpriteKind.AlienBolt, SpriteKind.Shield, function (bolt, layer) {
-            if ((phase == PHASE_DEFENSE || phase == PHASE_BOSS) && shieldContactAt == 0) {
-                shieldContactBolt = bolt
-                shieldContactLayer = layer
-                shieldContactAt = control.millis()
-            }
+        sprites.onOverlap(SpriteKind.Projectile, SpriteKind.ArmoredAlien, function (projectile, alien) {
+            if (control.millis() > noteUntil) { flash(alien.x, alien.y, false); say("ARMOR STOPS LASERS - MINES CAN HELP", 1000) }
         })
-
-        sprites.onOverlap(SpriteKind.Player, SpriteKind.ShieldCharge, function (player, charge) {
-            if (phase == PHASE_RECHARGE && chargeContactAt == 0) {
-                chargeCandidate = charge
-                chargeBaseline = shieldCountNow()
-                chargeContactAt = control.millis()
-            }
-        })
-
-        sprites.onOverlap(SpriteKind.Projectile, SpriteKind.ShieldCell, function (projectile, cell) {
-            if (phase == PHASE_BOSS && bossContactAt == 0) {
-                bossProjectile = projectile
-                bossCell = cell
-                bossCellIndex = indexOfBossCell(cell)
-                bossContactAt = control.millis()
-                bossContactAccepted = voidPatchDashboard.claimBurstHit(projectile)
-            }
-        })
-
-        sprites.onOverlap(SpriteKind.Player, SpriteKind.AlienBolt, function (player, bolt) {
-            if (phase != PHASE_DEFENSE && phase != PHASE_BOSS) {
-                return
-            }
+        sprites.onOverlap(SpriteKind.Player, SpriteKind.AlienBolt, function (ship, bolt) {
+            if (menuOpen || (phase != PHASE_DEFENSE && phase != PHASE_RECHARGE && phase != PHASE_BOSS)) return
+            // Ship damage is supplied behavior, not a learner-owned contact pair.
             bolt.destroy()
+            if (control.millis() - lastPlayerHitAt < 700) return
+            lastPlayerHitAt = control.millis()
             info.changeLifeBy(-1)
-            scene.cameraShake(4, 140)
-            music.playTone(131, 70)
-            console.log("ALIEN_DEFENDER player=bolt-hit")
-        })
-
-        sprites.onDestroyed(SpriteKind.Mine, function (mine) {
-            if (phase == PHASE_MINEFIELD && mine == activeMine && mineContactAt == 0
-                && activeWaveAlien != null && near(mine, activeWaveAlien)) {
-                mineContactMine = mine
-                mineContactAlien = activeWaveAlien
-                mineContactAt = control.millis()
-            }
-        })
-
-        sprites.onDestroyed(SpriteKind.AlienBolt, function (bolt) {
-            recentBolt = bolt
-            recentBoltAt = control.millis()
-            if ((phase == PHASE_DEFENSE || phase == PHASE_BOSS) && shieldContactAt == 0
-                && recentShieldLayer != null && control.millis() - recentShieldLayerAt <= 160
-                && near(bolt, recentShieldLayer)) {
-                shieldContactBolt = bolt
-                shieldContactLayer = recentShieldLayer
-                shieldContactAt = control.millis()
-            }
-        })
-
-        sprites.onDestroyed(SpriteKind.Shield, function (layer) {
-            recentShieldLayer = layer
-            recentShieldLayerAt = control.millis()
-            if ((phase == PHASE_DEFENSE || phase == PHASE_BOSS) && shieldContactAt == 0
-                && recentBolt != null && control.millis() - recentBoltAt <= 160
-                && near(recentBolt, layer)) {
-                shieldContactBolt = recentBolt
-                shieldContactLayer = layer
-                shieldContactAt = control.millis()
-            }
-        })
-
-        sprites.onDestroyed(SpriteKind.ShieldCharge, function (charge) {
-            let player = currentPlayer()
-            if (phase == PHASE_RECHARGE && chargeContactAt == 0 && player != null && near(player, charge)) {
-                chargeCandidate = charge
-                chargeBaseline = shieldCountNow()
-                chargeContactAt = control.millis()
-            }
-        })
-
-        sprites.onDestroyed(SpriteKind.ShieldCell, function (cell) {
-            recentBossCell = cell
-            recentBossCellAt = control.millis()
-            if (worldClearing || phase != PHASE_BOSS || bossContactAt != 0) {
-                return
-            }
-            if (recentProjectile != null && control.millis() - recentProjectileAt <= 160 && near(recentProjectile, cell)) {
-                let index = indexOfBossCell(cell)
-                if (index < 0) {
-                    return
-                }
-                bossProjectile = recentProjectile
-                bossCell = cell
-                bossCellIndex = index
-                bossContactAt = control.millis()
-                bossContactAccepted = voidPatchDashboard.claimBurstHit(recentProjectile)
-            }
+            scene.cameraShake(3, 150)
+            say("HULL HIT", 700)
         })
     }
-
-    sprites.onDestroyed(SpriteKind.Projectile, function (projectile) {
-        recentProjectile = projectile
-        recentProjectileAt = control.millis()
-        if (phase == PHASE_BOSS && bossContactAt == 0
-            && recentBossCell != null && control.millis() - recentBossCellAt <= 160
-            && near(projectile, recentBossCell)) {
-            let index = indexOfBossCell(recentBossCell)
-            if (index < 0) {
-                return
+    function updateCharge() {
+        let now = control.millis()
+        if (exists(charge, SpriteKind.ShieldCharge)) {
+            if (charge.y < 45) charge.vy = 16
+            if (charge.y > 202) charge.vy = -16
+        } else if (charge != null && chargeAt != 0 && now >= chargeAt) {
+            let successful = shieldCreationCount == chargeCreationBaseline + 1 && now - lastShieldCreatedAt < 420
+            charge = null
+            chargeAt = now + 1800
+            if (successful) {
+                console.log("ALIEN_DEFENDER recharge=learner-created remaining=" + shieldCount())
+                if (phase == PHASE_RECHARGE) { beginBoss(); return }
             }
-            bossProjectile = projectile
-            bossCell = recentBossCell
-            bossCellIndex = index
-            bossContactAt = control.millis()
-            bossContactAccepted = voidPatchDashboard.claimBurstHit(projectile)
+        }
+        if (charge == null && now >= chargeAt && (phase == PHASE_RECHARGE || shieldCount() < 3)) spawnCharge()
+    }
+    function updateSalvo() {
+        let now = control.millis()
+        if (warningUntil == 0 && now >= nextSalvoAt) {
+            let ship = player()
+            warningY = ship == null ? 120 : ship.y
+            warningUntil = now + 750
+        }
+        if (warningUntil != 0 && now >= warningUntil) {
+            for (let index = -1; index <= 1; index++) {
+                let bolt = sprites.create(assets.image`alien_bolt`, SpriteKind.AlienBolt)
+                bolt.setPosition(304, Math.constrain(warningY + index * 30, 35, 211))
+                bolt.setVelocity(-110, 0)
+                bolt.setFlag(SpriteFlag.AutoDestroy, true)
+            }
+            salvos += 1
+            warningUntil = 0
+            nextSalvoAt = now + 3100
+            console.log("ALIEN_DEFENDER salvo=fired count=" + salvos)
+        }
+    }
+    function updateOpening() {
+        for (let index = 0; index < scouts.length; index++) {
+            let scout = scouts[index]
+            if (scout == null) continue
+            if (!exists(scout, SpriteKind.Scout)) { scouts[index] = makeScout(index); continue }
+            if (scout.x < 142) scout.vx = 30
+            if (scout.x > 294) scout.vx = -30
+            if (scout.y < 42) scout.vy = 15
+            if (scout.y > 206) scout.vy = -15
+        }
+    }
+    function updateMines() {
+        for (let index = 0; index < attackers.length; index++) {
+            let alien = attackers[index]
+            if (alien == null) continue
+            if (!exists(alien, SpriteKind.ArmoredAlien)) {
+                attackers[index] = sprites.create(assets.image`armored_alien`, SpriteKind.ArmoredAlien)
+                attackers[index].setPosition(290, 46 + index * 37)
+                attackers[index].vx = -76
+            } else if (alien.x < 72) {
+                // The same living actor turns for another pass. This is not death or progress.
+                alien.vx = 76
+                say("ARMORED ALIENS ARE STILL HERE", 1100)
+            } else if (alien.x > 292 && alien.vx > 0) alien.vx = -76
+            if (mines[index] != null && !exists(mines[index], SpriteKind.Mine)) {
+                mines[index] = sprites.create(assets.image`ally_mine`, SpriteKind.Mine)
+                mines[index].setPosition(152, 46 + index * 37)
+            }
+        }
+    }
+    function updateBoss() {
+        let now = control.millis()
+        if (hullPracticeComplete) return
+        if (!exists(mothership, SpriteKind.Mothership)) {
+            if (bossMissingAt == 0) bossMissingAt = now
+            if (now - bossMissingAt > 200) { createMothership(); bossMissingAt = 0 }
+        } else {
+            if (mothership.y < 82) mothership.vy = 10
+            if (mothership.y > 158) mothership.vy = -10
+        }
+        if (practice == 5) return
+        for (let index = 0; index < cells.length; index++) {
+            if (cells[index] != null && !exists(cells[index], SpriteKind.MothershipShield) && repairAt[index] == 0) repairAt[index] = now + 350
+            if (repairAt[index] != 0 && now >= repairAt[index]) { makeCell(index); console.log("ALIEN_DEFENDER boss=shield-repaired") }
+        }
+        if (hullExposedUntil != 0 && now >= hullExposedUntil) {
+            for (let index = 0; index < 4; index++) {
+                if (!exists(cells[index], SpriteKind.MothershipShield)) makeCell(index)
+            }
+            bossHits = 0
+            hullExposedUntil = 0
+            say("MOTHERSHIP SHIELDS RECHARGED", 1400)
+        }
+        positionBoss()
+        updateCharge()
+        updateSalvo()
+    }
+    function launch(choice: number) {
+        menuOpen = false
+        pendingLaunch = -1
+        frozenSprites = []
+        practice = choice == 0 ? -1 : choice - 1
+        let ship = player()
+        if (ship != null) {
+            ship.setPosition(32, 120)
+            ship.setFlag(SpriteFlag.GhostThroughSprites, false)
+            controller.moveSprite(ship, 0, 100)
+        }
+        info.setLife(3)
+        clearing = true
+        removeKind(SpriteKind.Shield)
+        clearing = false
+        if (choice <= 1) beginOpening()
+        else if (choice == 2) beginMinefield()
+        else if (choice == 3) beginDefense()
+        else if (choice == 4) { beginDefense(); beginRecharge() }
+        else { clearEncounter(); addInitialShields(); beginBoss() }
+        console.log("ALIEN_DEFENDER practice=launched selection=" + choice)
+    }
+    function toggleMenu() {
+        if (!initialized || phase == PHASE_VICTORY) return
+        menuOpen = !menuOpen
+        let ship = player()
+        if (menuOpen) {
+            pendingLaunch = -1
+            pausedAt = control.millis()
+            voidPatchDashboard.pauseObservation()
+            menuChoice = practice == 5 ? 6 : Math.min(5, phase + 1)
+            frozenSprites = []; frozenVx = []; frozenVy = []
+            let kinds = [SpriteKind.Scout, SpriteKind.ArmoredAlien, SpriteKind.Mine, SpriteKind.AlienBolt,
+                SpriteKind.ShieldCharge, SpriteKind.Mothership, SpriteKind.MothershipShield, SpriteKind.Projectile]
+            for (let kind of kinds) {
+                for (let sprite of sprites.allOfKind(kind)) {
+                    frozenSprites.push(sprite); frozenVx.push(sprite.vx); frozenVy.push(sprite.vy)
+                    sprite.setVelocity(0, 0)
+                    sprite.setFlag(SpriteFlag.GhostThroughSprites, true)
+                }
+            }
+            if (ship != null) {
+                controller.moveSprite(ship, 0, 0)
+                ship.setFlag(SpriteFlag.GhostThroughSprites, true)
+            }
+        } else {
+            let elapsed = control.millis() - pausedAt
+            startedAt += elapsed
+            nextSalvoAt += elapsed
+            if (warningUntil != 0) warningUntil += elapsed
+            if (chargeAt != 0) chargeAt += elapsed
+            if (hullExposedUntil != 0) hullExposedUntil += elapsed
+            if (nextPhase >= 0) transitionAt += elapsed
+            for (let index = 0; index < repairAt.length; index++) {
+                if (repairAt[index] != 0) repairAt[index] += elapsed
+            }
+            for (let index = 0; index < frozenSprites.length; index++) {
+                frozenSprites[index].setVelocity(frozenVx[index], frozenVy[index])
+                frozenSprites[index].setFlag(SpriteFlag.GhostThroughSprites, false)
+            }
+            positionBoss()
+            voidPatchDashboard.resumeObservation()
+            if (ship != null) {
+                controller.moveSprite(ship, 0, 100)
+                ship.setFlag(SpriteFlag.GhostThroughSprites, false)
+            }
+        }
+    }
+    function drawHud(target: Image) {
+        target.fillRect(0, 0, 320, 23, 15)
+        target.fillRect(0, 224, 320, 16, 15)
+        let titles = ["SCOUTS", "MINEFIELD", "SHIELD DEFENSE", "SHIELD RECHARGE", "MOTHERSHIP", "EARTH IS SAFE"]
+        target.print(practice == 5 ? "PRACTICE: EXPOSED HULL" : titles[phase], 7, 6, 9, image.font5)
+        if (practice >= 0 && practice != 5) target.print("PRACTICE", 104, 6, 5, image.font5)
+        if (phase == PHASE_OPENING) target.print("SCOUTS " + scoutsDefeated + "/3", 205, 6, 1, image.font5)
+        else if (phase == PHASE_MINEFIELD) target.print("MINES " + mineDetonations + "/5", 205, 6, 1, image.font5)
+        else if (phase < PHASE_VICTORY && practice != 5) {
+            target.print("SHIELDS " + shieldCount(), 178, 6, 9, image.font5)
+            for (let index = 0; index < 7; index++) {
+                target.fillRect(246 + index * 8, 6, 5, 9, index < shieldCount() ? 9 : 8)
+            }
+        }
+        target.print("A: LASER", 7, 229, 1, image.font5)
+        target.print(voidPatchDashboard.isFiring() ? "B: FIRING" : "B: BURST", 78, 229, voidPatchDashboard.isFiring() ? 5 : 1, image.font5)
+        if (info.hasLife()) target.print("HULL " + info.life(), 146, 229, 2, image.font5)
+        target.print("MENU: PRACTICE", 214, 229, 9, image.font5)
+        if (phase == PHASE_BOSS && practice != 5) {
+            target.print(hullExposedUntil > control.millis() ? "HULL EXPOSED" : "MOTHERSHIP SHIELDS", 188, 28, 5, image.font5)
+            for (let index = 0; index < 4; index++) target.fillRect(222 + index * 18, 39, 14, 5, exists(cells[index], SpriteKind.MothershipShield) ? 4 : 8)
+        }
+        if (warningUntil != 0) {
+            for (let index = -1; index <= 1; index++) {
+                let y = Math.constrain(warningY + index * 30, 35, 211)
+                target.drawLine(292, y - 5, 286, y, 2); target.drawLine(286, y, 292, y + 5, 2)
+                target.drawLine(299, y - 5, 293, y, 5); target.drawLine(293, y, 299, y + 5, 5)
+            }
+        }
+        if (control.millis() < noteUntil) {
+            target.fillRect(3, 209, 314, 12, 15)
+            target.print(note, 7, 212, 5, image.font5)
+        }
+        if (menuOpen) {
+            target.fillRect(37, 25, 246, 190, 15); target.drawRect(37, 25, 246, 190, 9)
+            target.print("PRACTICE AN ENCOUNTER", 64, 34, 9, image.font8)
+            target.print("Your code stays exactly as it is.", 51, 50, 1, image.font5)
+            let options = ["Full game", "Scouts", "Minefield", "Shields", "Recharge", "Mothership", "Exposed hull"]
+            for (let index = 0; index < options.length; index++) target.print((index == menuChoice ? "> " : "  ") + options[index], 76, 68 + index * 16, index == menuChoice ? 5 : 1, image.font8)
+            target.print("UP/DOWN: CHOOSE   A: PLAY", 68, 190, 9, image.font5)
+            target.print("MENU: RETURN", 118, 202, 1, image.font5)
+        }
+    }
+    // MENU belongs to supplied navigation; replace Arcade's default pause menu, not learner code.
+    // Learner A/B handlers remain untouched and the A navigation listener below is additive.
+    controller.menu.onEvent(ControllerButtonEvent.Pressed, toggleMenu)
+    controller.up.addEventListener(ControllerButtonEvent.Pressed, function () { if (menuOpen) menuChoice = (menuChoice + 6) % 7 })
+    controller.down.addEventListener(ControllerButtonEvent.Pressed, function () { if (menuOpen) menuChoice = (menuChoice + 1) % 7 })
+    controller.A.addEventListener(ControllerButtonEvent.Pressed, function () {
+        if (menuOpen && pendingLaunch < 0) {
+            // Let the same physical A event finish before disposing the old practice scene.
+            // A never doubles as a free shot in the newly selected encounter.
+            pendingLaunch = menuChoice
+            launchAt = control.millis() + 120
         }
     })
-
-    sprites.onDestroyed(SpriteKind.Enemy, function (alien) {
-        if (worldClearing) {
+    info.onLifeZero(function () {
+        if (phase == PHASE_VICTORY) return
+        let retry = phase
+        let oldPractice = practice
+        launch(practice == 5 ? 6 : retry + 1)
+        practice = oldPractice
+        say("BACK IN ACTION", 1100)
+    })
+    scene.createRenderable(100, function (target: Image, camera: scene.Camera) { drawHud(target) })
+    game.onUpdate(function () {
+        if (player() == null) return
+        wireObservers()
+        if (!initialized) { initialized = true; beginOpening() }
+        if (menuOpen) {
+            if (pendingLaunch >= 0 && control.millis() >= launchAt) launch(pendingLaunch)
             return
         }
-        if (phase == PHASE_MINEFIELD && alien == activeWaveAlien && mineContactAt == 0
-            && activeMine != null && near(activeMine, alien)) {
-            mineContactMine = activeMine
-            mineContactAlien = alien
-            mineContactAt = control.millis()
+        let ship = player()
+        ship.y = Math.constrain(ship.y, 37, 207)
+        positionShields()
+        if (phase == PHASE_OPENING) updateOpening()
+        else if (phase == PHASE_MINEFIELD) updateMines()
+        else if (phase == PHASE_DEFENSE) {
+            updateSalvo()
+            // Surviving the wave reveals allied help. Dodging never blocks progression.
+            if (salvos >= 1 && control.millis() - startedAt > 4300) beginRecharge()
+        } else if (phase == PHASE_RECHARGE) { updateCharge(); updateSalvo() }
+        else if (phase == PHASE_BOSS) updateBoss()
+        else if (phase == PHASE_VICTORY && control.millis() >= victoryAt) game.gameOver(true)
+        if (nextPhase >= 0 && control.millis() >= transitionAt) {
+            if (nextPhase == PHASE_MINEFIELD) beginMinefield()
+            else if (nextPhase == PHASE_DEFENSE) beginDefense()
         }
-        if (phase == PHASE_OPENING && activeAlien == alien && openingContactAt == 0
-            && recentProjectile != null && control.millis() - recentProjectileAt <= 160
-            && near(recentProjectile, alien)) {
-            openingProjectile = recentProjectile
-            openingAlien = alien
-            openingContactAt = control.millis()
-        }
-        if (phase == PHASE_OPENING && activeAlien == alien) {
-            activeAlien = null
-        }
-    })
-
-    info.onLifeZero(function () {
-        if (phase == PHASE_BOSS && !victoryStarted) {
-            beginBoss(true)
-        } else if (phase == PHASE_DEFENSE || phase == PHASE_RECHARGE) {
-            info.setLife(3)
-            destroyKind(SpriteKind.AlienBolt)
-            nextBoltAt = control.millis() + 900
-        } else if (!victoryStarted) {
-            info.setLife(3)
+        for (let index = gone.length - 1; index >= 0; index--) {
+            if (control.millis() - gone[index].at > 200) gone.removeAt(index)
         }
     })
-
-    game.onUpdate(function () {
-        wireLearnerKindObservers()
-        if (phase == PHASE_OPENING) {
-            updateOpening()
-        } else if (phase == PHASE_MINEFIELD) {
-            updateMinefield()
-        } else if (phase == PHASE_DEFENSE) {
-            updateDefense()
-        } else if (phase == PHASE_RECHARGE) {
-            updateRecharge()
-        } else if (phase == PHASE_BOSS) {
-            updateBoss()
-        }
-    })
-
-    export function currentPhase(): number {
-        return phase
-    }
-
-    export function mineDetonationCount(): number {
-        return mineDetonations
-    }
-
-    export function shieldCount(): number {
-        return shieldCountNow()
-    }
-
-    export function bossShieldCount(): number {
-        return sprites.allOfKind(SpriteKind.ShieldCell).length
-    }
-
-    export function acceptedBossHitCount(): number {
-        return bossHits
-    }
+    export function currentPhase(): number { return phase }
+    export function mineDetonationCount(): number { return mineDetonations }
+    export function shieldCount(): number { return sprites.allOfKind(SpriteKind.Shield).length }
+    export function bossShieldCount(): number { return sprites.allOfKind(SpriteKind.MothershipShield).length }
+    export function acceptedBossHitCount(): number { return bossHits }
+    export function scoutDefeatCount(): number { return scoutsDefeated }
+    export function practiceEncounter(): number { return practice }
+    export function bossHullExposed(): boolean { return practice == 5 || hullExposedUntil > control.millis() && bossShieldCount() == 0 }
 }
 
+// Read-only shot observation: never fires, moves, or removes learner lasers.
 namespace voidPatchDashboard {
-    let burstProjectiles: Sprite[] = []
-    let burstCreatedAt: number[] = []
-    let burstClaimed: boolean[] = []
-    let burstOriginChecked: boolean[] = []
-    let burstStartedAt = 0
+    class PendingShot {
+        sprite: Sprite
+        at: number
+        aWasDown: boolean
+        fromA = false
+        claimed = false
+        constructor(sprite: Sprite, at: number) {
+            this.sprite = sprite
+            this.at = at
+            this.aWasDown = controller.A.isPressed()
+        }
+    }
+    class Burst {
+        startedAt: number
+        completedAt = 0
+        shots: PendingShot[] = []
+        nonAShotCount = 0
+        qualified = false
+        constructor(at: number) { this.startedAt = at }
+    }
+    let bursts: Burst[] = []
+    let collecting: Burst = null
+    let pending: PendingShot[] = []
+    let qualified = false
+    let pausedAt = 0
+    let wasBDown = false
     let lastBPressAt = 0
-    let burstInvalid = false
+    let lastCreated: PendingShot = null
 
-    function log(message: string) {
-        console.log("ALIEN_DEFENDER " + message)
+    function observePhysicalPress() {
+        let down = controller.B.isPressed()
+        if (down && !wasBDown) {
+            lastBPressAt = control.millis()
+            console.log("ALIEN_DEFENDER burst=press")
+        }
+        wasBDown = down
     }
 
-    function currentPlayer(): Sprite {
+    function drainShots(factoryFinished: boolean) {
+        let now = control.millis()
         let players = sprites.allOfKind(SpriteKind.Player)
-        return players.length == 1 ? players[0] : null
-    }
-
-    function startsAtShip(projectile: Sprite): boolean {
-        let player = currentPlayer()
-        return player != null
-            && Math.abs(projectile.x - player.x) <= 20
-            && Math.abs(projectile.y - player.y) <= 12
-            && projectile.vx > 0
-    }
-
-    function resetBurst(startedAt: number) {
-        burstProjectiles = []
-        burstCreatedAt = []
-        burstClaimed = []
-        burstOriginChecked = []
-        burstStartedAt = startedAt
-        burstInvalid = false
-        log("burst=window-open")
-    }
-
-    function beginBPress() {
-        let now = control.millis()
-        lastBPressAt = now
-        if (burstStartedAt == 0 || now - burstStartedAt > 650 || burstProjectiles.length == 0) {
-            resetBurst(now)
-        } else {
-            log("burst=B-confirmed-after-first-projectile")
-        }
-    }
-
-    function recordProjectile(projectile: Sprite) {
-        let now = control.millis()
-        let activeCandidate = burstStartedAt != 0 && burstProjectiles.length > 0 && now - burstStartedAt <= 800
-        if (!activeCandidate && !controller.B.isPressed() && now - lastBPressAt > 120) {
-            return
-        }
-        if (burstStartedAt == 0) {
-            resetBurst(now)
-        } else if (now - burstStartedAt > 800) {
-            if (!controller.B.isPressed() && now - lastBPressAt > 120) {
-                return
-            }
-            resetBurst(now)
-        }
-        if (burstProjectiles.length >= 5) {
-            burstInvalid = true
-            log("burst=invalid-too-many")
-            return
-        }
-        if (burstCreatedAt.length > 0) {
-            let spacing = now - burstCreatedAt[burstCreatedAt.length - 1]
-            if (spacing < 60 || spacing > 180) {
-                burstInvalid = true
-                log("burst=invalid-spacing value=" + spacing)
-            }
-        }
-        burstProjectiles.push(projectile)
-        burstCreatedAt.push(now)
-        burstClaimed.push(false)
-        burstOriginChecked.push(false)
-        log("burst=pulse count=" + burstProjectiles.length)
-    }
-
-    function verifyOrigins() {
-        for (let index = 0; index < burstProjectiles.length; index++) {
-            if (!burstOriginChecked[index]) {
-                burstOriginChecked[index] = true
-                if (!startsAtShip(burstProjectiles[index])) {
-                    burstInvalid = true
-                    log("burst=invalid-origin")
+        let ship = players.length == 1 ? players[0] : null
+        // onCreated precedes factory setup. A B completion is also a safe drain point:
+        // its synchronous projectile factories have returned even if there was no pause.
+        while (pending.length > 0 && (factoryFinished || now - pending[0].at >= 16)) {
+            let shot = pending.shift()
+            if (ship == null || shot.sprite.vx <= 0
+                || Math.abs(shot.sprite.x - ship.x) > 32
+                || Math.abs(shot.sprite.y - ship.y) > 20) continue
+            if (collecting == null) collecting = new Burst(shot.at)
+            collecting.shots.push(shot)
+            if (!shot.fromA) collecting.nonAShotCount += 1
+            if (shot.fromA) {
+                // Shooting A must not spoil genuine B shots that are still traveling.
+                // Assistance never supplies a missing B pulse or qualifies a new volley.
+                for (let burst of bursts) {
+                    if (burst.qualified && shot.at >= burst.startedAt && shot.at - burst.startedAt <= 1300) {
+                        burst.shots.push(shot)
+                    }
                 }
+            }
+        }
+    }
+
+    function finishInvocation() {
+        if (pausedAt != 0) {
+            // A menu can cover an unfinished learner callback. Close its boundary anyway:
+            // partial pre-menu evidence must never join the next invocation after resume.
+            collecting = null
+            pending = []
+            return
+        }
+        drainShots(true)
+        if (collecting != null) {
+            let burst = collecting
+            collecting = null
+            burst.completedAt = control.millis()
+            let first = 0
+            let previous = 0
+            let cadence = true
+            let count = 0
+            for (let shot of burst.shots) {
+                if (shot.fromA) continue
+                count += 1
+                if (count == 1) first = shot.at
+                else if (shot.at - previous < 40 || shot.at - previous > 260) cadence = false
+                previous = shot.at
+            }
+            burst.nonAShotCount = count
+            burst.startedAt = first == 0 ? burst.completedAt : first
+            burst.qualified = count == 5 && cadence && previous - first >= 200
+            if (burst.qualified) {
+                qualified = true
+                console.log("ALIEN_DEFENDER burst=qualified shots=5")
+            }
+            bursts.push(burst)
+        }
+        // Arcade serializes this button's callbacks. This boundary closes one invocation
+        // before the next queued callback runs, even when its physical press happened earlier.
+        console.log("ALIEN_DEFENDER burst=event-complete")
+    }
+
+    function observeShots() {
+        if (pausedAt != 0) return
+        observePhysicalPress()
+        drainShots(false)
+        let now = control.millis()
+        for (let index = bursts.length - 1; index >= 0; index--) {
+            if (now - bursts[index].completedAt > 5000) bursts.removeAt(index)
+        }
+        // Bound pre-B A-only history without ever borrowing it for B qualification.
+        if (collecting != null && collecting.nonAShotCount == 0) {
+            for (let index = collecting.shots.length - 1; index >= 0; index--) {
+                if (now - collecting.shots[index].at > 1300) collecting.shots.removeAt(index)
             }
         }
     }
 
     export function claimBurstHit(projectile: Sprite): boolean {
-        let now = control.millis()
-        if (burstInvalid || burstProjectiles.length != 5 || now - burstStartedAt > 2200) {
-            log("shield=reject count=" + burstProjectiles.length)
-            return false
-        }
-        if (burstCreatedAt[4] - burstCreatedAt[0] < 240 || burstCreatedAt[4] - burstCreatedAt[0] > 720) {
-            log("shield=reject-total-cadence")
-            return false
-        }
-        for (let index = 0; index < burstProjectiles.length; index++) {
-            if (burstProjectiles[index] == projectile && !burstClaimed[index] && projectile.vx > 0) {
-                burstClaimed[index] = true
-                log("shield=accept-pulse index=" + index)
-                return true
+        for (let burst of bursts) {
+            if (!burst.qualified) continue
+            for (let shot of burst.shots) {
+                if (shot.sprite == projectile && !shot.claimed && shot.at >= burst.startedAt - 120) {
+                    // The shared flag prevents a physical shot being claimed across groups.
+                    shot.claimed = true
+                    return true
+                }
             }
         }
-        log("shield=reject-identity")
         return false
     }
-
+    export function isFiring(): boolean {
+        return lastBPressAt != 0 && control.millis() - lastBPressAt < 520
+            || collecting != null && collecting.nonAShotCount > 0
+    }
     export function observedBurstCount(): number {
-        return burstProjectiles.length
+        let count = collecting == null ? 0 : collecting.nonAShotCount
+        for (let burst of bursts) count = Math.max(count, burst.nonAShotCount)
+        return count
+    }
+    export function observedBurstValid(): boolean { return qualified }
+    export function resetForEncounter() {
+        bursts = []; collecting = null; pending = []; qualified = false; pausedAt = 0
+        wasBDown = controller.B.isPressed(); lastCreated = null; lastBPressAt = 0
+    }
+    export function pauseObservation() { pausedAt = control.millis() }
+    export function resumeObservation() {
+        if (pausedAt == 0) return
+        let elapsed = control.millis() - pausedAt
+        if (lastBPressAt != 0) lastBPressAt += elapsed
+        let groups = bursts.slice()
+        if (collecting != null) groups.push(collecting)
+        let shifted: PendingShot[] = []
+        for (let burst of groups) {
+            burst.startedAt += elapsed
+            if (burst.completedAt != 0) burst.completedAt += elapsed
+            for (let shot of burst.shots) {
+                if (shifted.indexOf(shot) < 0) { shot.at += elapsed; shifted.push(shot) }
+            }
+        }
+        for (let shot of pending) shot.at += elapsed
+        pausedAt = 0
     }
 
-    export function observedBurstValid(): boolean {
-        return !burstInvalid && burstProjectiles.length == 5
-    }
-
-    sprites.onCreated(SpriteKind.Projectile, recordProjectile)
-    controller.B.addEventListener(ControllerButtonEvent.Pressed, beginBPress)
-    game.onUpdateInterval(20, verifyOrigins)
-    log("observer=ready-invisible")
+    sprites.onCreated(SpriteKind.Projectile, function (projectile) {
+        if (pausedAt == 0) {
+            observePhysicalPress()
+            lastCreated = new PendingShot(projectile, control.millis())
+            pending.push(lastCreated)
+        }
+    })
+    controller.A.addEventListener(ControllerButtonEvent.Pressed, function () {
+        // The taught A handler creates one shot synchronously without pausing. Arcade calls
+        // additive handlers in the same fiber immediately afterwards (controllerbutton.ts).
+        // Tag that creation, not every B pulse born while the player happens to hold A.
+        if (pausedAt == 0 && lastCreated != null && lastCreated.aWasDown
+            && control.millis() - lastCreated.at <= 20) lastCreated.fromA = true
+    })
+    controller.B.addEventListener(ControllerButtonEvent.Pressed, finishInvocation)
+    game.onUpdate(observeShots)
 }
 ```
 
 ```assetjson
 {
-  "images.g.jres": "{\n    \"*\": {\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"dataEncoding\": \"base64\",\n        \"namespace\": \"myImages\"\n    },\n    \"vp_drone_cyan\": {\n        \"data\": \"hwQQABAAAAAAAABplgAAAAAAkImYCQAAAACZGIGZAAAAkIkREZgJAACZiBERiJkAkIkYERGBmAmZiBEVURGImZmIEVVVEYiZkIkYFVGBmAkAmRgREYGZAACQiBERiAkAAACJERGYAAAAAImIiJgAAAAAkIiICQAAAACQiZgJAAAAAACZmQAAAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"drone_cyan\",\n        \"tags\": []\n    },\n    \"vp_drone_ember\": {\n        \"data\": \"hwQQABAAAAAAAABURQAAAAAAQHRHBAAAAABEEiFEAAAAQCQREUIEAABEIhERIkQAQCQSEREhQgREIhEVUREiREQiEVVVESJEQCQSFVEhQgQARBIRESFEAABAIhERIgQAAAAkERFCAAAAACQiIkIAAAAAQCIiBAAAAABAJEIEAAAAAABERAAAAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"drone_ember\",\n        \"tags\": []\n    },\n    \"vp_glitch\": {\n        \"data\": \"hwQMAAwAAAAAAAqgAAAAAKAgIiICCgAAKqKiKiqiAACgojIjKgoAAAAqozqiAAAAACqqqqIAAAAAKqqqogAAAAAqozqiAAAAoKIyIyoKAAAqoqIqKqIAAKAgIiICCgAAAAAKoAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"glitch\",\n        \"tags\": []\n    },\n    \"vp_mothership\": {\n        \"data\": \"hwQcABQAAAAAAAAAoAoAAAAAAAAAAACqmqmqAAAAAAAAAKCqmZmqCgAAAAAAAKCZmZmZCgAAAAAAAJqZqZqZqQAAAAAAAJqZqqqZqQAAAAAAoJmqGqGqmQoAAAAAoKmqERGqmgoAAAAAmqkRURURmqkAAAAAmqkRURURmqkAAACgmhoRlVkRoakKAACgmRpRlVkVoZkKAACqmRpVGZFVoZmqAACqmRpVGZFVoZmqAACqmRpVGZFVoZmqAACqmRpVGZFVoZmqAACgmRpRlVkVoZkKAACgmhoRlVkRoakKAAAAmqkRURURmqkAAAAAmqkRURURmqkAAAAAoKmqERGqmgoAAAAAoJmqGqGqmQoAAAAAAJqZqqqZqQAAAAAAAJqZqZqZqQAAAAAAAKCZmZmZCgAAAAAAAKCqmZmqCgAAAAAAAACqmqmqAAAAAAAAAAAAoAoAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"mothership\",\n        \"tags\": []\n    },\n    \"vp_ally_mine\": {\n        \"data\": \"hwQJAAkAAAAAQEQAAAAAAABERQQAAAAAQFRaRAAAAABApaFFAAAAAFSloQUEAAAAQKWhRQAAAABAVFpEAAAAAABERQQAAAAAAEBEAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"ally_mine\",\n        \"tags\": []\n    },\n    \"vp_player_shield\": {\n        \"data\": \"hwQFABAAAAAAmZmZmZmZAJCZmZmZmZkJmREREREREZmQmZmZmZmZCQCZmZmZmZkA\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"player_shield\",\n        \"tags\": []\n    },\n    \"vp_shield_charge\": {\n        \"data\": \"hwQJAAkAAAAAkJkAAAAAAACZlQkAAAAAkFlVmQAAAACZVVGVCQAAAJBZVZkAAAAAAJmVCQAAAAAAkJkAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_charge\",\n        \"tags\": []\n    },\n    \"vp_shield_ui_on\": {\n        \"data\": \"hwQGAAYAAACQmQkAmRGZABkRkQAZEZEAmRGZAJCZCQA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_ui_on\",\n        \"tags\": []\n    },\n    \"vp_shield_ui_off\": {\n        \"data\": \"hwQGAAYAAADAzAwAzADMAAwAwAAMAMAAzADMAMDMDAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_ui_off\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_1\": {\n        \"data\": \"hwQFAAcAAAAAmQAAkJkJAJkRmQmQmQkAAJkAAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_1\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_2\": {\n        \"data\": \"hwQFAAcAAACQmZkAmZmZCZARkQAAmQkAAJAAAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_2\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_3\": {\n        \"data\": \"hwQFAAcAAAAAmQkAkBmZAJkRkQmQGZkAAJkJAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_3\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_4\": {\n        \"data\": \"hwQFAAcAAAAAkAAAAJkJAJARkQCZmZkJkJmZAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_4\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_5\": {\n        \"data\": \"hwQFAAcAAAAAkAkAAJmZAJkZkQkAmZkAAJAJAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_5\",\n        \"tags\": []\n    },\n    \"vp_alien_bolt\": {\n        \"data\": \"hwQGAAQAAABABAAAREQAAFRFAABURQAAQAQAAEAEAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"alien_bolt\",\n        \"tags\": []\n    },\n    \"vp_shield_flash\": {\n        \"data\": \"hwQJAAkAAAAAmZkJAAAAAJAJAJkAAAAAkAAAkAAAAAAJAAAACQAAAAkAAQAJAAAACQAAAAkAAACQAACQAAAAAJAJAJkAAAAAAJmZCQAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_flash\",\n        \"tags\": []\n    },\n    \"vp_patch_pulse\": {\n        \"data\": \"hwQIAAQAAACQCQAAmZkAABmVAAAZlQAAGZUAABmVAACZmQAAkAkAAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"patch_pulse\",\n        \"tags\": []\n    },\n    \"vp_wide_patch\": {\n        \"data\": \"hwQKAAYAAAAAmQAAkJkJAJkRmQAZVZEAGVWRABlVkQAZVZEAmRGZAJCZCQAAmQAA\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"wide_patch\",\n        \"tags\": []\n    },\n    \"vp_void_patch_grid\": {\n        \"data\": \"hwSgAHgAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////5///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+I/4j/iP+I/4j/iP+I/4j/iP+I/4j/iP+I/4j/iP+I/4j/iP+I/4j/iP+I/4j/iP+I/4j/iP+I/4j/iP+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZkR8R8R/xHxHxH/EfEfEf8R8R8R/xHxHxH/EfEfEf8R8R8R/xHxHxH/EfEfEf8R8R8R/xHxHxH/EfEfEf+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZn/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////6//////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////n/////////////////////////////////////////9f///////////////////////////////P/8//mfnP/8//z//P/8//z//P/8//z//P/8//z//P/8//z/9V9c//z//P/8//z//P/8//z//P/8//////////n/////////////////////////////////////////9f////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////n/////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9f/////////////////////////////////////////5/////////////////////P/8//z//P/8//z/9V9c//z//P/8//z//P/8//z//P/8//z//P/8//z//P/5n5z//P/8//z//P/8////////////////////9f/////////////////////////////////////////5//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j/////////9f////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////5//////////////////////////////////////////r//////////P/8//z//P/8//z//P/8//z//P/5n5z//P/8//z//P/8//z//P/8//z//P/8//z//P/8//qvrP/8///////////////////////////////5//////////////////////////////////////////r///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4//////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+f////////////////////r//////////////////////////////////////////P/8//z//P/8//z/+Z+c//z//P/8//z//P/8//qvrP/8//z//P/8//z//P/8//z//P/8//z//P/8////////////////////+f////////////////////r///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j//////////////////////////////////////////////////////////////////////////////////////////////6////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j/////////+P/////////4//////////j/////////+P/////////4//////////j/////8=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"void_patch_grid\",\n        \"tags\": [\n            \"background\"\n        ]\n    }\n}"
+  "images.g.jres": "{\n    \"*\": {\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"dataEncoding\": \"base64\",\n        \"namespace\": \"myImages\"\n    },\n    \"vp_drone_cyan\": {\n        \"data\": \"hwQYABQAAAAAAABAAAAEAAAAAAAAAABAVEUEAAAAAAAAAABAVEUEAAAAAABgAABAVEUEAAAGAABgaQZAVVUEYJYGAABgmWlGVVVklpkGAABgiZm2a7ZrmZgGAABgiYi5a7abiJgGAABgmYgYERGBiJkGAAAAlokYERGBmGkAAAAAYJkYGIGBmQYAAAAAAJYZiIiRaQAAAAAAAGYZZoiRZgAAAAAAAGAWZohhBgAAAAAAAAAWZohhAAAAAAAAAAAQmIgBAAAAAAAAAAAQgRgBAAAAAAAAAABgEREGAAAAAAAAAAAAGZEAAAAAAAAAAAAAGZEAAAAAAAAAAAAAlmkAAAAAAAAAAAAAZmYAAAAAAAAAAAAAYAYAAAAAAAAAAAAAAAAAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"drone_cyan\",\n        \"tags\": []\n    },\n    \"vp_drone_ember\": {\n        \"data\": \"hwQYABQAAAAAAABAAAAEAAAAAAAAAABAVEUEAAAAAAAAAABAVEUEAAAAAADgAABAVEUEAAAOAADg5A5AVVUE4E4OAADgROROVVXkTkQOAADgJES+677rREIOAADgJCK0675LIkIOAADgRCISEREhIkQOAAAATiQSEREhQuQAAAAA4EQSEiEhRA4AAAAAAE4UIiJB5AAAAAAAAO4U7iJB7gAAAAAAAOAe7iLhDgAAAAAAAAAe7iLhAAAAAAAAAAAQQiIBAAAAAAAAAAAQIRIBAAAAAAAAAADgEREOAAAAAAAAAAAAFEEAAAAAAAAAAAAAFEEAAAAAAAAAAAAATuQAAAAAAAAAAAAA7u4AAAAAAAAAAAAA4A4AAAAAAAAAAAAAAAAAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"drone_ember\",\n        \"tags\": []\n    },\n    \"vp_glitch\": {\n        \"data\": \"hwQYABQAAAAAAAAAzAAAAAAAAAAAAADArMoMAAAAAAAMAADM+qLMAADAAAA8M8Cs/y/PDKrKAADAMzMqXy//qqoMAADAPKMqXy//rMoMAAAAzKPzX//0qswAAAAAwKrzX/L0qgwAAAAAAKrzX/L0rgAAAAAAACrz//L0rgoAAAAAoCozL/L/rgoAAAAAoCozIiIvrgoAAAAAoCozIiIirgoAAAAAACoiIiIirgAAAAAAAKoiIiIirgAAAAAAAKoiIiIiqgAAAAAAAKwiIiIiqgAAAAAAAKwqIiKiygAAAAAAAMyqRKqkzAAAAAAAwMysRFXEzAwAAAAAzMwMRFXEzMwAAADAzMwARFUAzMwMAAAAwAwAwFUAwAwAAAAAAAAAAFUAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"glitch\",\n        \"tags\": []\n    },\n    \"vp_mothership\": {\n        \"data\": \"hwRQAEAAAAAAAAAAAAAAAAAAAAAAAMDMzAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzMzMzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMzMzMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzKyqqsrMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMqqqqqswMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzKyqqqqqyswAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMu6qqqqqqzAwAAAAAAAAAAAAAAAAAAAAAAAAAAADMvLurqqqqqszMzAwAAAAAAAAAAAAAAAAAAAAAAAAAzLy7u6uqqqyqyszMzMwAAAAAAAAAAAAAAAAAAAAAwMzMu7u7qqrMzKrKzMzMzMwAAAAAAAAAAAAAAAAAAMDMzLy7u7vKzMLMqqrMzMzMzMwAAAAAAAAAAAAAAAAAzMysuru7u8wsIsysqszMzMzMzAwAAAAAAAAAAAAAAMDMrKq7u7vLzEIizKyqyszMzMrMzAAAAAAAAAAAAAAAzMyqOru7u8ssRCTMzKrKzMysqszMDAAAAAAAAAAAAMDMrDozs7u7zEJEJMLMqqrMzKyqyszMAAAAAAAAAAAAzMyqMzOzu8ssQkQkwsyqqsrMqqqqzMwMAAAAAAAAAMDMrDozMzO7yyxCVUTCzMyqqsyqqqrKzMwAAAAAAAAAzMyqMzMzM7vMLERRRCLMzMyqquqqqqrMzAwAAAAAAMDMrDozMzMzyswiVFFEIszMzMyqqu6uqsrMzAAAAAAAzMyqMzMzM6PMzCJUUUQizMzLzKyq7u6uqszMAAAAAADMrDozMzMzyszMQlRRRCLCzLvMzKrq7u6qyswAAAAAwMyqMzMzM8PMzCxCVEFEIsLMurvMzKru7q7KzAwAAADAzDozMzMzzMvMLEJUQUQiwsysu8vMrO7ursrMDAAAAMCsOjMzMzO8zMwsQlVBJCLCzKy6u8ys6u7uqszMAAAAzKw6MzMzw6vMzCJEVUEkIsLMrKq7y8zq7u6qzMwAAADMrDMzMzO8qszMIkRVRSQiIsysqrq7zKzu7q7KzAAAAMyqMzMzM6yqzMwiRFVFJCIizKyqqrvMrO7ursrMDADAzKozMzPDq6rMzCJEVUQkIiLMzKqqu8vM6u6uqswMAMDMqjMzM7yqqsrMIkRURCQiIszMrKq6u8ys7u6qzAwAwKw6MzMzvKqqyswiRFREJCLCzMzMqrq7zKw+46rMzADMrDozMzOrqqrMzCJEREQkIsLMzMysqrvLrDrjrsrMAMysOjMzw6uqqs/MLEJERCIiwszMz6yqu8vMOuOuyswAzKo6MzPDq6rKz8wsQkREIiLMzPzPzKq7y8zq7q7KzADMqjMzM7OqqsrPzCxCRCQiIszM/M/Mqrq7zOrursrMAMyqMzMzvKqqzM/MLEJEJCIizMz8z8ysurvMPOOuyswAzKozMzO8qqrM/8wsQkQkIsLMzP/PzKy6u8w8467KzADMqjMzM7yqqvz/zCwiQiIiwszM///MrLq7zDzjrsrMAMyqMzMzvKqqzP/MzCIiIiLCzPz/z8ysurvMrO6uyswAwKozMzO8qqrM/8zMLCIiIszM/P/PzKy6u8ys7q7KzADArDozM6yqqsz/zMzMIiLCzMz8/8/MrKq7zDzjrsrMAMCsOjMzu6rKzP/PzMwsIszMzP//z8zMurvLPOOuyswAwKw6MzO8qqrM///MzMzCzMzM///PzKy6u8w84+6qzAzArDozM7yqqsz8/8/MzMzMzMz//8zMrLq7zKzu7qrMDMCsOjMzvKqqzPz//8zMzMzM/P//zMysurvMrO7uqswMwKw6MzO8qqrMzP//z8zMzMz//8/MzKy6u8w84+6qzAzArDozM7yqqszM/P//zMz8////zMzMrLq7zDzj7qrMDMCsOjMzvKuqzMzM///P/////8/MzMysu7vMPOPuqswMwKw6MzO8q6rKzMz8////////zMzMzKq7u8ys6u6qzAzArKozM8yrqsrMzMz8/////8zMzMzMqrvLzKzq7qrMDADMqjMzw7uqqszMzMzM/MzMzMzMzKy6u8vMqu7uqswMAMyqMzPDu6rMzMzMzMzMzMzMzMzMrLrLzMyq7u6qzAwAzKozM8PMzMzMzMzMzMzMzMzMzMyqzMzMzOru7qrMDADMqjMzM8zMzMzMzMzMzMzMzMzMrKrMzMys6u7uyswMAMyqOjMzzLu7zMzMzMzMzMzMzMyqury7y8zq7q7KzAwAzKo6MzPM27vLzMzMzMzMzMzMrKq7vL27zOzurszMAADMrKozM8Pbu8vMyszMzMzMzMyquru8vbvM7O6qzMwAAMCsqjMzw9u7u8ysyszMzMzMqqq7u7y9u8vM7srMDAAAwMyqOjPD27u7zKyqqqqsqqqquru7vL27y8yuyswMAAAAzKo6M8zbu7vLzKqqqqqqqrq7u8u8vbu7zKzKzAAAAADMrKozzNu7u8vMqqqqqqq6u7u7zLy9u7vMrMzMAAAAAMDMqjPMu7u7y8y7u6u7u7u7u8zMvLu7u8yszMwAAAAAwMyqOsy7qrrLzLu7u7u7u7vLzMy8q6q7zMzMDAAAAAAAzKyqzLuqusvMvLu7u7u7zMzMzLyrqrvMzMwMAAAAAADMrKrMu6q6y8zMzMzLzMzMzMzMvKuqu8zMzAAAAAAAAMDMqsy7qrrLzMzMzMzMzMzMzMq8q6q7zMzMAAAAAAAAwMyszLyqusvMzMzMzMzMzMyqysyrqrvMzAwAAAAAAAAAzMzMzKq6y6zK/P//////r6rKzKyqu8zMAAAAAAAAAADAzMzMqrrLrKr6UiIlUiKvqurMrKq7zAwAAAAAAAAAAADMzMyqysysqvpSIiVSIq/q7s6sqszMAAAAAAAAAAAAAMDMzCIizKyq+lIiJVIir+7u7iwiwswAAAAAAAAAAAAAAMzMIiLMrKr6///////v7u6uKiLCzAAAAAAAAAAAAAAAwMwiIqqqqqqqqqqqqqrurqosIgIAAAAAAAAAAAAAAAAAzCIirKqqqqqqqqqqquqqyiwiAgAAAAAAAAAAAAAAAADAQiTMzKqqqqqqqqqqqsrMLEQCAAAAAAAAAAAAAAAAAABMxMzMzKyqqqqqqqrKzMzMRAAAAAAAAAAAAAAAAAAAAEDEzMzMzMyqqqqqyszMzAxEAAAAAAAAAAAAAAAAAAAAQAQAzMzMzMzMqsrMzMwMAEQAAAAAAAAAAAAAAAAAAAAAAAAAwMzMzMzMzMzMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMzMzMzAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMwMAAAAAAAAAAAAAAAA\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"mothership\",\n        \"tags\": []\n    },\n    \"vp_ally_mine\": {\n        \"data\": \"hwQSABIAAAAAAABgmQYAAAAAAAAAAABgmQYAAAAAAAAAAICIiIgIAAAAAAAAAIhmZmaIAAAAAAAAgGhmZmaGCAAAAAAAgBZVVVVmCAAAAAAAgFZFRFRlCAAAAABmhlYUEUFlaGYAAACZiVZVVVVlmJkAAACZiVZVVVVlmJkAAABmhlYUEUFlaGYAAAAAgFhFRFSFCAAAAAAAAIhVVVWJAAAAAAAAAIBoZoYIAAAAAAAAAACIiIgAAAAAAAAAAABgmQYAAAAAAAAAAABgmQYAAAAAAAAAAABgmQYAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"ally_mine\",\n        \"tags\": []\n    },\n    \"vp_player_shield\": {\n        \"data\": \"hwQGACIAAABgZgAAAAAAAAAAAAAAAABmBgAAAGaWZgAAAAAAAAAAAAAAZmlmAAAAYGaZmWlmZmaZZmZmlpmZZgYAAAAAZpaZmZmZmZmZmZmZmWlmAAAAAABgZpYZEREREREREZFpZgYAAAAAAAAAZmZmZmZmZmZmZmYAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"player_shield\",\n        \"tags\": []\n    },\n    \"vp_shield_charge\": {\n        \"data\": \"hwQSABIAAAAAAICIiIgAAAAAAAAAAJiZmZkIAAAAAAAAgJmZmZmJAAAAAAAAmJlmZpaZCAAAAACAGWlmZmaZiQAAAACAmWYWVWGWmQgAAACAmWYWVWFmmQgAAACAmRYRVRFhmQgAAACAmVZVVVVlmQgAAACAmVZVVVVlmQgAAACAmRYRVRGRmQgAAACAmWkWVWGZmQgAAAAAmJkWVZGZiQAAAAAAgJlpZpmZAQAAAAAAAJiZmZmJAAAAAAAAAICZmZkIAAAAAAAAAACIiIgAAAAAAAAAAAAAAAAAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_charge\",\n        \"tags\": []\n    },\n    \"vp_shield_ui_on\": {\n        \"data\": \"hwQGAAYAAACQmQkAmRGZABkRkQAZEZEAmRGZAJCZCQA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_ui_on\",\n        \"tags\": []\n    },\n    \"vp_shield_ui_off\": {\n        \"data\": \"hwQGAAYAAADAzAwAzADMAAwAwAAMAMAAzADMAMDMDAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_ui_off\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_1\": {\n        \"data\": \"hwQIAEgAAAAAAAAAAAAAAADMzMzMzMzMzMzMzMzMzMzMzMwAAAAAAAAAAAAAAAAAAMDMzMysqqqqqqqqqqqqqqqqqqqqqsrMzMwMAAAAAAAAAADAzKyqqqqqqjNENDMzVVVVVTNENDMzo6qqqqrKzAwAAAAAAMzMSkQ6MzMzM8NEBAAAVVVVVQBEBADMMzMzM0SkqszMAADAzKyqQ0QzzAAAAABEBAAAAAAAAABEBAAAAAAAwEQ0M6PKzAzAzKozQ0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQEzDOqzAwAzMzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMzAAAwAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_1\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_2\": {\n        \"data\": \"hwQIAEgAAAAAAAAAAAAAAADMzMzMzMzMzMzMzMzMzMzMzMwAAAAAAAAAAAAAAAAAAMDMzMysqqqqqqqqqqqqqqqqqqqqqsrMzMwMAAAAAAAAAADAzKyqqqqqqjNENDMzVVVVVTNENDMzo6qqqqrKzAwAAAAAAMzMSkQ6MzMzM8NEBAAAVVVVVQBEBADMMzMzM0SkqszMAADAzKyqQ0QzzAAAAABEBAAAAAAAAABEBAAAAAAAwEQ0M6PKzAzAzKozQ0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQEzDOqzAwAzMzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMzAAAwAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_2\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_3\": {\n        \"data\": \"hwQIAEgAAAAAAAAAAAAAAADMzMzMzMzMzMzMzMzMzMzMzMwAAAAAAAAAAAAAAAAAAMDMzMysqqqqqqqqqqqqqqqqqqqqqsrMzMwMAAAAAAAAAADAzKyqqqqqqjNENDMzVVVVVTNENDMzo6qqqqrKzAwAAAAAAMzMSkQ6MzMzM8NEBAAAVVVVVQBEBADMMzMzM0SkqszMAADAzKyqQ0QzzAAAAABEBAAAAAAAAABEBAAAAAAAwEQ0M6PKzAzAzKozQ0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQEzDOqzAwAzMzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMzAAAwAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_3\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_4\": {\n        \"data\": \"hwQIAEgAAAAAAAAAAAAAAADMzMzMzMzMzMzMzMzMzMzMzMwAAAAAAAAAAAAAAAAAAMDMzMysqqqqqqqqqqqqqqqqqqqqqsrMzMwMAAAAAAAAAADAzKyqqqqqqjNENDMzVVVVVTNENDMzo6qqqqrKzAwAAAAAAMzMSkQ6MzMzM8NEBAAAVVVVVQBEBADMMzMzM0SkqszMAADAzKyqQ0QzzAAAAABEBAAAAAAAAABEBAAAAAAAwEQ0M6PKzAzAzKozQ0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQEzDOqzAwAzMzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMzAAAwAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_4\",\n        \"tags\": []\n    },\n    \"vp_shield_cell_5\": {\n        \"data\": \"hwQIAEgAAAAAAAAAAAAAAADMzMzMzMzMzMzMzMzMzMzMzMwAAAAAAAAAAAAAAAAAAMDMzMysqqqqqqqqqqqqqqqqqqqqqsrMzMwMAAAAAAAAAADAzKyqqqqqqjNENDMzVVVVVTNENDMzo6qqqqrKzAwAAAAAAMzMSkQ6MzMzM8NEBAAAVVVVVQBEBADMMzMzM0SkqszMAADAzKyqQ0QzzAAAAABEBAAAAAAAAABEBAAAAAAAwEQ0M6PKzAzAzKozQ0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQEzDOqzAwAzMzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDMzAAAwAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_cell_5\",\n        \"tags\": []\n    },\n    \"vp_alien_bolt\": {\n        \"data\": \"hwQMAAYAAAAAAAAAACIAACBEAgAiUSIAQlEkAEJRJABCVSQAQlUkAEJVJABCRCQAIEQCAAAiAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"alien_bolt\",\n        \"tags\": []\n    },\n    \"vp_shield_flash\": {\n        \"data\": \"hwQSABIAAAAAAAAAAQAAAAAAAAAAAJCZmZkJAAAAAAAAAJmZmZmZAAAAAAAAkJkAAACZCQAAAAAAmQAAAAAAmQAAAACQmQAAAAAAmQkAAACQCQAAAAAAkAkAAACQCQAAAAAAkAkAAACRCQAAAAAAkBkAAACQCQAAAAAAkAkAAACQCQAAAAAAkAkAAACQCQAAAAAAkAkAAACQmQAAAAAAmQkAAAAAmQAAAAAAmQAAAAAAkJkAAACZCQAAAAAAAJmZmZmZAAAAAAAAAJCZmZkJAAAAAAAAAAAAAQAAAAAAAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"shield_flash\",\n        \"tags\": []\n    },\n    \"vp_patch_pulse\": {\n        \"data\": \"hwQMAAQAAACQCQAAlmkAAJZpAAAWYQAAFmEAABZhAAAWYQAAFmEAABZhAAAWYQAAFmEAAJAJAAA=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"patch_pulse\",\n        \"tags\": []\n    },\n    \"vp_wide_patch\": {\n        \"data\": \"hwQOAAYAAAAAAAAAkJkJAJaZaQCWEWkAlhFpAJYRaQCWEWkAlhFpAJYRaQCWEWkAlhFpAJYRaQCQEQkAABEAAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"wide_patch\",\n        \"tags\": []\n    },\n    \"vp_armored_alien\": {\n        \"data\": \"hwQgABoAAAAAAAAAAADAAAAAAAAAAAAAAAAM0N0AzAywC8wAAAAAAADA3N0NwMzMsLvLDAAAAAAAzNzdDf//zgy7y8wAAAAAAMzd3exf9e7Ou7vMDAAAAMDM3evuX/Xu7ru7ywwAAADAzLvu7k/07+6+u8sAAAAAALy77v5P9O/u7rvMAAAAAAC8u+7+T/Tv7r67zAAAAAAAzLvr/k/07u6+uwwAAAAAAMC76/7/7+7uvssMAAAAAADAvOvu/u7u7rvLDAAAAAAAwNzd7u7u7ru7y8wAAAAAAMzbHd3uvru727vMAAAAAADM3R3R3d273d29zAAAAAAAzN0REd3c3d3tvssMAAAAwLzdERHdzMzd7t7LDAAAAMC83RER3czM3O7eywwAAADA3M3MEd3MzNzu7r3MAAAAzNsdERHdzMzc7u69zAAAAMzbHRER3czM3O7eywwAAADAvN0REd3MzO3u3ssMAAAAwLzbERHdzMztzL3MDAAAAADM2x0R3czM7d67zAAAAAAAzLvdHd3MzO3dy8wAAAAAAMC7293dzMzdvczMAAAAAADAvLu73d29u8vMDAAAAAAAAMy7u0REtLvMzAAAAAAAAADAzLxERLTLzAwAAAAAAAAAAMDMVFXEzAwAAAAAAAAAAAAAwFxVzMwAAAAAAAAAAAAAAABQVQAAAAAAAAAAAA==\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"armored_alien\",\n        \"tags\": []\n    },\n    \"vp_void_patch_grid\": {\n        \"data\": \"hwRAAfAAAAD//////////////////////////////////////////////////////////////////////2ZmiIhoZmZmmWZmZmZmZmZmZmZmZmZmZmZmZmaGiIiIiJmJiGhmZmZmZmZmZmZmZmZmZmZmZmZmZpaZZmZmZmZmZob//////////////////////////////////////////////////////////////////////59mhoiIZmaWmWlmZmZmZmZmZmZmZmZmZmZmZmaGiIiIiJmJiGhmZmZmZmZmZmZmZmZmZmZmZmZmZpaZZmZmZmZmZob/////////////////////////////////////////+P////////////////////////////9mZoiIaGaWmWlmZmZmZmZmZmZmZmZmZmZmZmaIiIiIiJmJiGhmZmZmZmZmZmZmZmZmZmZmZmZmZpaZZmZmZmZmZmb///////////////////////////////////////////////////////////////////////+fZmaIiGaWmWlmZmZmZmZmZmZmZmZmZmZmZoaIiIiIiJmJiGhmZmZmZmZmZmZmZmZmZmZmZmZmZpaZZmZmZmZmZmb///////////////////////////////////////////////////////////z/////////////ZmaGiGiWmWlmZmZmZmZmZmZmZmZmZmZmZoiIiIiIiJmJiGhmZmZmZmZmZmZmZmZmZmZmZmZmZpmZZmZmZmZmZmb/////////////////////////////////////////////////////////////////////////n2ZmiIhomWlmZmZmZmZmZmZmZmZmZmaGiIiIiIiIiJiJiGhmZmZmZmZmZmZmZmZmZmZmZmZmZpmZZmZmZmZmZob//////////////////////////////////////////////////////////////////////////2ZmhoiImWlmZmZmZmZmZmZmZmaIiIiIiIiIiIiIiJiZiGhmZmZmZmZmZmZmZmZmZmZmZmZmZpmZZmZmZmZmZoj///////////////////////////////////////////////////////////////////////////9mZoiImGlmZmZmZmZmZmZmhoiIiIiIiIiIiIiIiJiZiIhmZmZmZmZmZmZmZmZmZmZmZmZmZpaZZmZmZmZmZoj///////////////////////////////////////////////////j///////////////////////9vZmaIiGhmZmZmZmZmZmZmhoiIiIiIiIiIiIiIiIiZiIhoZmZmZmZmZmZmZmZmZmZmZmZmZpaZZmZmZmZmhoj/////////////////////////////////////////////////////////////////////////////ZmaGiIhmZmZmZmZmZmZmloiIiIiIiIiIiIiIiIiZiIiIZmZmZmZmZmZmZmZmZmZmZmZmZpZpZmZmZmZmiIj/////////////////////////////////////////////////////////////////////////////b2lmiIhoZmZmZmZmZmZmlomIiIiIiIiIiIiIiIiIiIiIaGZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmiIj//////////////////////////////////////////////////////////////////////////////29mZoiIaGZmZmZmZmZmmYmIiIiIiIiIiIiIiIiIiIiIiGZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaGiIj///////////////////////////////////////////////////////////////////////////////9pZoaIiGZmZmZmZmZmmYmIiIiIiIiIiIiIiIiIiIiIiGhmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaGiIj///////////////////////////////////////////////////////////////////////////////9vZmaIiIhmZmZmZmZmmYmIiIiIiIiIiIiIiIiIiIiIiIhmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaIiIj/////////////////////////////////////////////////////////////////////////iPj/////b2ZmiIhoZmZmZmZmmYmIiIiIiIiIiIiIiIiIiIiIiIhmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZoaIiIj/////////////////////////////////////////////////////////////////////////iPj//////5ZmhoiIaGZmZmaWmYmIiIiIiIiIiIiIiIiIiIiIiIhoZmZmZmZmZmZmZmZmZmZmZmZmZoaIiIiIiIj//////////////////////////////////////////////////////////////////////////////////29mZoaIiGZmZoiYmYmIiIiIiIiIiIiIiIiIiIiIiIhoZmZmZmZmZmZmZmZmZmZmZoaIiIiIiIiIiIj///////////////////////////////////////////////////////////////////////////////////+fZmaIiIiGiIiYmYmIiIiIiIiIiIiIiIiIiIiIiIhoZmZmZmZmZmZmZmZmZmZmZoiIiIiIiIiIiIj//////////////////////////////////////////P////////////////////z/////////////////////ZmZmiIiIiIiYmYmIiIiIiIiIiIiIiIiIiIiIiIiIZmZmZmZmZmZmZmZmZmZmZoiIiIiIiIiIiIj//////////////////////////////////////////////////////////////////////////////////////2ZmZoiIiIiImYmIiIiIiIiIiIiIiIiIiIiIiIiIZmaGiIhmZmaZZmZmZmZmZoiIiIiIiIiIiIj////////////////////////////////////////////////////////////////////////////////4/////29pZoaIiIiImYmIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIhmZmaZaWZmZmZmhoiIiIiIiIiIiIj///////////////////////////////////////////////////////////////////////////////////////9vZmaGiIiImYiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIhoZmaZmWZmZmZmhoiIiIiIiIiIiIj///////////////////////////////////////////////////////z//////////P//////////////////////b2ZmhoiImIiIiIiIiGiIiIiIiIiIiIiIiIiIiIiIiIhoZpaZmWZmZmZmhoiIiIiIiIiIiIj//////////////////////////////////////////////////////////////////////////////////////////5ZmZoaIiIiIiIiIiGZmhoiIiIiIiIiIiIiIiIiIiIhoZpaZmWZmZmZmiIiIiIiIiIiIiIj///////////////////////////////////////////////////////////////////////////////////////////9mZmaGiIiIiIiIaGZmZoaIiIiIiIiIiIiIiIiIiIhoZpaZaWZmZmZmiIiIiIiIiIiIiIj/////////////////////////////////////////////////////////////////////////////////////////////ZmZmhoiIiIiIaGZmZmaIiIiIiIiIiIiIiIiIiIhoZpmZaWZmZmaGiIiIiIiIiIiIiIj/////////////////////////+///////////////////////////////////////////////////////////iPj//////2lmZoaIiIiIZmZmZmaGiIiIiIiIiIiIiIiIiIiIZpmZaWZmZmaIiIiIiIiIiIiIiIj/////////////////////////////////////////////////////////////////////////////////////iPj///////+WZmaGiIiIaGZmZmZmiIiIiIiIiIiIiIiIiIiIZpmZaWZmZoaIiIiIiIiIiIiIiIj/////////////////////////////////////////////////////////////////////////////////////////////////ZmZmhoiIiGhmZmZmiIiIiIiIiIiIiIiIiIiIiJmZaWZmhoiIiIiIiIiIiIiIiIj//////////////////////////////////////////////////////////////////////////////////////////////////2ZmZmaIiIiIZmZmhoiIiIiIiIiIiIiIiIiIiJmZaWZmiIiIiIiIiIiIiIiIiIj///////////////////////////////////////z///////////////////////////////////////////////////////////9pZmZmiIiIiGhmhoiIiIiIiIiIiIiIiIiIiJiZmWaGiIiIiIiIiIiIiIiIiIj/////////////////////////////////////////////////////////////////////////////////////////////////////n2ZmZoaIiIiIiIiIiIiIiIiIiIiIiIiIiJiZmYiIiIiIiIiIiIiIiIiIiIj///////////////////////////////////z//////////////////////////////////////////////////////////////////29pZmaGiIiIiIiIiIiIiIiIiIiIiIiIiJiZmYiIiIiIiIiIiIiIiIiIiIj///////////////////////////////////////////////////////////////////////////////////////////////////////9vlmZmZoaIiIiIiIiIiIiIiIiIiIiIiIiZmYiIiIiIiIiIiIiIiIiIiIj//////////////////////////////////////////////////////////////////////////P///////////////////////////////2ZpZmZmiIiIiIiIiIiIiIiIiIiIiIiYiYiIiIiIiIiIiIiIiIiIiIj///////////////////////////////////////////////////////////////////////////////////////////////////////////9vlmZmZoaIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIj///////////////////////////////////////////////////////////j/////////////////////////////////////iPj//////////2ZpZmZmhoiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIj/////////////////////////////////////////////////////////////////////////////////////////////////iPj///////////9vlmZmZmZmiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIj//////////////////////////////////////////////////////////////////////////////////////////////////////////////////29pZmZmZmaGiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIZmb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////n2aWZmZmZmZmiIiIiIiIiIiIiIiIiIiIiIhoZmZmZmb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZmlmZmZmZmZmZmZmZmaGZmZmZmZmZmZmZmZmaWb///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+fZpZmZmZmZmZmZmZmZmZmZmZmZmZmlmaW////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////aWZpZmlmaWZpZmlmaWZpZmn2////////////////////////////////////////////////////////////////////////////////////////////////////////////////////iPj/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////iPj/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////iPj/////////////////////////////////////////////////////////////j///////////////////////////////////////////////////////////////////////////////////////////////iPj/////////////////////////////////iPj/////////////////////////mPj/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////iPj/////////////////////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////iPj//P//////iPj/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////iPj/////////iPj//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4///////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/////////////////////////////////////////////////////P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+P/////////////////////////////////////////////////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v///////////////////////////////////////////////////////////////////////////////////////////////v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4+J///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z//////////P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z////////////////////////////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j//////////////////////////////////////////////////////////////////////////P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+P///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+///////////////////////////////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8//////////z///////////////////////////////////////////////////////////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j//////////////////////////////////////////////////////////////////////////P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4//////////////////////////////////////j////////////////////////////////////////////////////8/////////////////////////////////////////////////////////////////4+J///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4//////////////////////////////////v///////////////////////////////////////////////////////////////v/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+P///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j////////////////////////////////////////////////////8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////5j4///////////////////////////////////////////////////////////////////////////////////////////8/////////////////////////////////////////////////////////////////4///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P/////////////////////////////////////////8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4///////////////////////////////////////////////////////////////8//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8//////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v//////////////////////////////////////////////////////////////////////////////////////////4//////////////+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////5j4/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4/////////////////////4///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4//////////z////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zMzMzPz////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////MzMzMzMz8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/LzMzMzMzM/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7zMzMzMzMzM/P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z8zM/MzMzMzMzP//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zPz/////zMzMzPz////////////////////////8//////////////////////////////////////////////////////////////////////////z/////////+P///////////////////////////////////P///////8zMzPz////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P/////////8/MzMz///////////////////////////////////////////////////////////////j////////////////////////////////////////////////////////////////////////////////////////////MzMz////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////PzMz////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////PzMz/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zMz8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zMz/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zMz/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zMz/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////z8z/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zPz/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zPz/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////5j4/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4////////////////////////////////////////////////////////z///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8=\",\n        \"mimeType\": \"image/x-mkcd-f4\",\n        \"displayName\": \"void_patch_grid\",\n        \"tags\": [\n            \"background\"\n        ]\n    }\n}"
 }
 ```
-
 
 <!--
 ALIEN DEFENDER — PUBLICATION AND SOURCE NOTICE
 
-Alien Defender's game world, vocabulary, sprites, hidden systems, five-overlap progression, and five-pulse ending are original project material. Instructional language and sequencing were adapted from these Microsoft-authored sources:
+# Alien Defender — source and asset notices
 
-1. Microsoft MakeCode Arcade, "Galga," pxt-arcade repository, upstream blob a20c99fee74d3b93e9b7c6c4681a7ec18ce1ae14 at repository head 28ed0fb6e9ede7894fcc65687c976316f2ebcf44, captured 2026-08-23.
-2. Microsoft MakeCode Arcade, "Dunk," pxt-arcade repository, upstream blob c84243b9beea2fec0ed528d6b801edba5f1bd65d at repository head 28ed0fb6e9ede7894fcc65687c976316f2ebcf44, captured 2026-08-23.
-3. Microsoft MakeCode AP CSP, Unit 3 Day 16, makecode-csp repository commit bdfb78e32f41fffba6bebc623379370151123773.
+Alien Defender's game world, actor vocabulary, pixel art, hidden systems, six-overlap practice sequence, and five-pulse ending are project-specific material. The following source acknowledgments concern adapted instructional language and programming-operation sequences. They do not attribute Alien Defender's story, artwork, or game design to Microsoft.
 
-Changes include a new game world, actors, art, hidden runtime, vocabulary, encounter sequence, gradual-release overlap practice, physical shields, repair behavior, and B-button loop finale. Microsoft names identify source provenance only and do not imply endorsement.
+## Microsoft MakeCode Arcade tutorials
 
-The MakeCode AP CSP documentation/content adaptation is provided under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+Microsoft-authored tutorial text and code from `microsoft/pxt-arcade` are used under the MIT License. The full retained copyright and permission notice is included in `LICENSES/MIT.txt` and in the tutorial's source comment.
+
+- [Galga](https://github.com/microsoft/pxt-arcade/blob/28ed0fb6e9ede7894fcc65687c976316f2ebcf44/docs/tutorials/galga.md): source blob `a20c99fee74d3b93e9b7c6c4681a7ec18ce1ae14`.
+- [Galga — spy variation](https://github.com/microsoft/pxt-arcade/blob/28ed0fb6e9ede7894fcc65687c976316f2ebcf44/docs/tutorials/spy/galga.md): source blob `fc8db0dfc581a2291050b1265df2699217e12958`.
+- [Dunk](https://github.com/microsoft/pxt-arcade/blob/28ed0fb6e9ede7894fcc65687c976316f2ebcf44/docs/tutorials/dunk.md): source blob `c84243b9beea2fec0ed528d6b801edba5f1bd65d`.
+- [Free Throw](https://github.com/microsoft/pxt-arcade/blob/28ed0fb6e9ede7894fcc65687c976316f2ebcf44/docs/tutorials/free-throw.md): source blob `329aa65a3e740f7caf79db8c28e870e7ccb2052f`.
+
+These source versions were retained on 2026-08-23. Changes include project-specific actors, names, values, images, controls, encounter order, gradual release of the overlap pattern, physical shields, recharge, direct mothership contact, and native `sprite` / `otherSprite` instructions. Free Throw's separately hosted image and extension packages are not included or used; their rights are not inferred from the tutorial's MIT license.
+
+## Microsoft MakeCode AP CSP
+
+The counted, time-spaced projectile loop and its reflection adapt Microsoft MakeCode AP CSP, [Unit 3 Day 16 — Projectiles Activities](https://github.com/microsoft/makecode-csp/blob/bdfb78e32f41fffba6bebc623379370151123773/content/unit-3/day-16/projectiles-activities.md).
+
+Microsoft and contributors license that documentation/content under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/), and its code under the MIT License. This tutorial's adaptation of that documentation/content is provided under CC BY 4.0. Changes include a five-repeat B-button laser burst, 100-millisecond spacing, omission of the source's changing vertical position, and game-specific reflection wording. The earlier accepted adaptation is not represented as an exact Microsoft quotation.
+
+Microsoft names identify provenance only. No endorsement is stated or implied. The source licenses do not grant rights to Microsoft names, logos, or trademarks.
+
+## Alien Defender assets and demonstrations
+
+The supplied pixel art is generated from the project's canonical `phase-04-design/assets/void_patch_assets.json`; no source-family artwork or GIF is redistributed. All eight expected-result GIFs are recordings of the corresponding Alien Defender candidate running in the released local Arcade simulator with ordinary controller inputs. Their exact bytes, input/source identities, and time-sampling provenance are retained in `DEMONSTRATION_PROVENANCE.json` and the staging manifest. They are instructional references, not an independent learner test or evidence of human enjoyment.
+
+The source licenses above apply to the identified third-party material. This notice does not silently impose an additional open-source license on the owner's original game, story, or artwork.
 
 MIT License
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE
 -->
