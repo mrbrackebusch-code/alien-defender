@@ -16,6 +16,8 @@ Add the code that shoots lasers, defeats aliens, activates mines and shields, wi
 
 Move with the direction buttons. To practice one part of the battle, press **MENU**, choose an encounter with **↑ / ↓**, then press **A**. **MENU** closes the practice menu.
 
+On a keyboard, **Space** or **Z** presses the game’s **A** button; **Enter** or **X** presses **B**; and **backtick** opens **MENU**. The keyboard letter **A** is not the game’s **A** button.
+
 ## 1. Shoot a Laser
 
 Before we do anything we need to get your ship equipped with some weapons. Good thing recent research has developed lasers that can travel through the vacuum of space. **Let's make the “A” button shoot.**
@@ -32,13 +34,13 @@ Shoot one laser with **A**.
 
 - Open the variable menu at the start of the new block and choose the supplied ``||variables(noclick):laser||`` variable.
 
-- Click the laser's image box. Open **My Assets** and choose `patch_pulse`.
+- Click the laser's image box. Open **My Assets**, choose the `patch_pulse` tile, then click **Done**. Before you test, check that the image box shows the cyan pulse.
 
 - Change ``||variables(noclick):mySprite||`` to the supplied ``||variables(noclick):ship||``. Change **vx** to **200** and **vy** to **0**.
 
 ### What you should see
 
-![One A press sends one laser from the ship to the right.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/01-laser.gif)
+![One A press sends one laser from the ship to the right.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/a7c8d311b9ae/01-laser.gif)
 
 One laser travels to the right from your ship each time you press **A**.
 
@@ -80,7 +82,7 @@ The overlap event uses ``||variables(noclick):sprite||`` and ``||variables(nocli
 
 ### What you should see
 
-![A laser touches a scout, and both disappear.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/02-scout.gif)
+![A laser touches a scout, and both disappear.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/a7c8d311b9ae/02-scout.gif)
 
 When the laser touches a scout, the laser and scout disappear.
 
@@ -116,7 +118,7 @@ Make each mine destroy the armored alien that touches it.
 
 ### What you should see
 
-![Five armored aliens reach five mines together; every touching pair explodes.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/03-minefield.gif)
+![Five armored aliens reach five mines together; every touching pair explodes.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/a7c8d311b9ae/03-minefield.gif)
 
 Each mine and the armored alien touching it disappear in an explosion.
 
@@ -153,7 +155,7 @@ Make each shield stop one alien bolt.
 
 ### What you should see
 
-![An incoming alien bolt and one shield layer disappear; one shield mark goes dark.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/04-shields.gif)
+![An incoming alien bolt and one shield layer disappear; one shield mark goes dark.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/a7c8d311b9ae/04-shields.gif)
 
 The bolt and one shield disappear. One shield mark goes dark.
 
@@ -194,7 +196,7 @@ For the new shield, snap a ``||variables(sprites):set [mySprite] to sprite [ ] o
 
 ### What you should see
 
-![The ship collects a shield charge; the charge disappears and a new shield joins the stack.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/05-recharge.gif)
+![The ship collects a shield charge; the charge disappears and a new shield joins the stack.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/a7c8d311b9ae/05-recharge.gif)
 
 The charge disappears. A new shield joins your ship, and one shield mark lights up.
 
@@ -232,7 +234,7 @@ Make each laser destroy the mothership shield it touches.
 
 ### What you should see
 
-![One laser removes one mothership shield; after a delay, that shield repairs.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/06-mothership-shield.gif)
+![One laser removes one mothership shield; after a delay, that shield repairs.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/a7c8d311b9ae/06-mothership-shield.gif)
 
 Your laser and one mothership shield disappear. Then the shield repairs.
 
@@ -268,7 +270,7 @@ Make a laser destroy the unprotected mothership.
 
 ### What you should see
 
-![A laser reaches the exposed mothership, and both disappear.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/07-mothership.gif)
+![A laser reaches the exposed mothership, and both disappear.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/a7c8d311b9ae/07-mothership.gif)
 
 The laser and unprotected mothership disappear.
 
@@ -314,7 +316,7 @@ How many separate lasers should leave the ship after one **B** press?
 
 ### What you should see
 
-![One B press sends five lasers: four break the mothership shields and the fifth destroys the mothership.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/8d4a865a36dd/08-burst.gif)
+![One B press sends five lasers: four break the mothership shields and the fifth destroys the mothership.](https://raw.githubusercontent.com/mrbrackebusch-code/alien-defender/main/assets/demos/a7c8d311b9ae/08-burst.gif)
 
 Five lasers: four shields break, then the mothership is destroyed. **YOU WIN!**
 
@@ -421,6 +423,7 @@ namespace voidPatchGame {
     let lastShieldCreatedAt = 0
     let shieldCreationCount = 0
     let chargeCreationBaseline = 0
+    let rechargeCompleteAt = 0
     let mothership: Sprite = null
     let cells: Sprite[] = []
     let repairAt: number[] = [0, 0, 0, 0]
@@ -433,6 +436,8 @@ namespace voidPatchGame {
     let warningUntil = 0
     let warningY = 120
     let salvos = 0
+    let defenseCompleteAt = 0
+    let defenseCheckAt = 0
     let lastPlayerHitAt = 0
     let menuOpen = false
     let menuChoice = 0
@@ -512,8 +517,11 @@ namespace voidPatchGame {
         charge = null
         mothership = null
         chargeAt = 0
+        rechargeCompleteAt = 0
         warningUntil = 0
         salvos = 0
+        defenseCompleteAt = 0
+        defenseCheckAt = 0
         bossMissingAt = 0
         victoryAt = 0
         hullPracticeComplete = false
@@ -572,6 +580,8 @@ namespace voidPatchGame {
         clearEncounter()
         phase = PHASE_DEFENSE
         startedAt = control.millis()
+        defenseCompleteAt = 0
+        defenseCheckAt = 0
         addInitialShields()
         nextSalvoAt = control.millis() + 900
         say("INCOMING SALVO", 1800)
@@ -581,17 +591,37 @@ namespace voidPatchGame {
         if (exists(charge, SpriteKind.ShieldCharge)) return
         let ship = player()
         charge = sprites.create(assets.image`shield_charge`, SpriteKind.ShieldCharge)
-        charge.setPosition(32, ship == null || ship.y > 120 ? 74 : 172)
-        charge.setVelocity(0, ship == null || ship.y > 120 ? 16 : -16)
+        if (phase == PHASE_RECHARGE) {
+            // The first charge is a fluency check, not a chase challenge. Place it
+            // one short move from the ship and hold it still while the learner tests
+            // the overlap. Boss recharges keep their later moving pattern below.
+            let shipY = ship == null ? 120 : ship.y
+            charge.setPosition(ship == null ? 32 : ship.x, shipY <= 120 ? shipY + 28 : shipY - 28)
+            charge.setVelocity(0, 0)
+        } else {
+            charge.setPosition(32, ship == null || ship.y > 120 ? 74 : 172)
+            charge.setVelocity(0, ship == null || ship.y > 120 ? 16 : -16)
+        }
         chargeCreationBaseline = shieldCreationCount
-        console.log("ALIEN_DEFENDER recharge=available")
+        console.log("ALIEN_DEFENDER recharge=available nearby=" + (phase == PHASE_RECHARGE))
     }
     function beginRecharge() {
         phase = PHASE_RECHARGE
         startedAt = control.millis()
+        rechargeCompleteAt = 0
+        defenseCompleteAt = 0
+        defenseCheckAt = 0
+        // Recharge begins from a stable three-layer baseline. No hostile salvo can
+        // erase the learner-created fourth layer before its result is readable.
+        clearing = true
+        removeKind(SpriteKind.AlienBolt)
+        clearing = false
+        warningUntil = 0
+        nextSalvoAt = 0
+        addInitialShields()
         spawnCharge()
         say("ALLIED SHIELD CHARGE", 1600)
-        console.log("ALIEN_DEFENDER phase=recharge")
+        console.log("ALIEN_DEFENDER phase=recharge shields=3 pressure=clear")
     }
     function cellImage(index: number): Image {
         if (index == 0) return assets.image`shield_cell_1`
@@ -668,6 +698,18 @@ namespace voidPatchGame {
         } else if (kind == SpriteKind.Shield) {
             flash(second.x, second.y, false)
             console.log("ALIEN_DEFENDER shield=intercept remaining=" + shieldCount())
+            if (phase == PHASE_DEFENSE && defenseCompleteAt == 0) {
+                // The learner has already removed both real contact sprites. Hold
+                // that two-layer result long enough to reach the framebuffer before
+                // Recharge restores the supplied three-layer baseline.
+                defenseCompleteAt = control.millis() + 1400
+                defenseCheckAt = 0
+                clearing = true
+                removeKind(SpriteKind.AlienBolt)
+                clearing = false
+                warningUntil = 0
+                console.log("ALIEN_DEFENDER defense=intercept-hold ms=1400")
+            }
         } else if (kind == SpriteKind.MothershipShield && phase == PHASE_BOSS) {
             let index = cells.indexOf(second)
             if (index < 0) return
@@ -702,6 +744,17 @@ namespace voidPatchGame {
         if (clearing || menuOpen || phase == PHASE_VICTORY) return
         let record = new Gone(sprite, kind)
         gone.push(record)
+        if (phase == PHASE_DEFENSE && (kind == SpriteKind.AlienBolt || kind == SpriteKind.Shield)) {
+            let partnerKind = kind == SpriteKind.AlienBolt ? SpriteKind.Shield : SpriteKind.AlienBolt
+            for (let partner of sprites.allOfKind(partnerKind)) {
+                if (activeContact(sprite, partner)) {
+                    // One destroyed actor is not the learned two-action response.
+                    // Wait briefly for the paired destroy callback before reporting.
+                    defenseCheckAt = control.millis() + 220
+                    break
+                }
+            }
+        }
         for (let other of gone) {
             if (other == record || other.used || Math.abs(record.at - other.at) > 160
                 || !near(sprite, other.sprite) || !activeContact(sprite, other.sprite)) continue
@@ -749,22 +802,46 @@ namespace voidPatchGame {
             lastPlayerHitAt = control.millis()
             info.changeLifeBy(-1)
             scene.cameraShake(3, 150)
-            say("HULL HIT", 700)
+            if (phase == PHASE_DEFENSE) {
+                say("CHECK YOUR SHIELD CODE", 1600)
+                console.log("ALIEN_DEFENDER defense=check-code missing-pair")
+            } else say("HULL HIT", 700)
         })
     }
     function updateCharge() {
         let now = control.millis()
+        if (phase == PHASE_RECHARGE && rechargeCompleteAt != 0) {
+            if (now >= rechargeCompleteAt) {
+                rechargeCompleteAt = 0
+                beginBoss()
+            }
+            return
+        }
         if (exists(charge, SpriteKind.ShieldCharge)) {
             if (charge.y < 45) charge.vy = 16
             if (charge.y > 202) charge.vy = -16
         } else if (charge != null && chargeAt != 0 && now >= chargeAt) {
             let successful = shieldCreationCount == chargeCreationBaseline + 1 && now - lastShieldCreatedAt < 420
             charge = null
-            chargeAt = now + 1800
             if (successful) {
                 console.log("ALIEN_DEFENDER recharge=learner-created remaining=" + shieldCount())
-                if (phase == PHASE_RECHARGE) { beginBoss(); return }
+                say("SHIELD RESTORED!", 1200)
+                if (phase == PHASE_RECHARGE) {
+                    // The learner-created shield is already visible. Quiet the supplied
+                    // threat so its result remains readable before the next encounter.
+                    clearing = true
+                    removeKind(SpriteKind.AlienBolt)
+                    clearing = false
+                    chargeAt = 0
+                    rechargeCompleteAt = now + 1200
+                    console.log("ALIEN_DEFENDER recharge=feedback-restored holdMs=1200")
+                    return
+                }
+            } else {
+                say("NO SHIELD RESTORED - CHECK YOUR CODE", 1600)
+                console.log("ALIEN_DEFENDER recharge=missing-shield retry=true")
             }
+            chargeAt = now + 1800
         }
         if (charge == null && now >= chargeAt && (phase == PHASE_RECHARGE || shieldCount() < 3)) spawnCharge()
     }
@@ -896,6 +973,8 @@ namespace voidPatchGame {
             nextSalvoAt += elapsed
             if (warningUntil != 0) warningUntil += elapsed
             if (chargeAt != 0) chargeAt += elapsed
+            if (defenseCompleteAt != 0) defenseCompleteAt += elapsed
+            if (defenseCheckAt != 0) defenseCheckAt += elapsed
             if (hullExposedUntil != 0) hullExposedUntil += elapsed
             if (nextPhase >= 0) transitionAt += elapsed
             for (let index = 0; index < repairAt.length; index++) {
@@ -992,10 +1071,14 @@ namespace voidPatchGame {
         if (phase == PHASE_OPENING) updateOpening()
         else if (phase == PHASE_MINEFIELD) updateMines()
         else if (phase == PHASE_DEFENSE) {
-            updateSalvo()
-            // Surviving the wave reveals allied help. Dodging never blocks progression.
-            if (salvos >= 1 && control.millis() - startedAt > 4300) beginRecharge()
-        } else if (phase == PHASE_RECHARGE) { updateCharge(); updateSalvo() }
+            if (defenseCompleteAt == 0) updateSalvo()
+            if (defenseCheckAt != 0 && control.millis() >= defenseCheckAt) {
+                defenseCheckAt = 0
+                say("CHECK YOUR SHIELD CODE", 1600)
+                console.log("ALIEN_DEFENDER defense=check-code partial-pair")
+            }
+            if (defenseCompleteAt != 0 && control.millis() >= defenseCompleteAt) beginRecharge()
+        } else if (phase == PHASE_RECHARGE) updateCharge()
         else if (phase == PHASE_BOSS) updateBoss()
         else if (phase == PHASE_VICTORY && control.millis() >= victoryAt) game.gameOver(true)
         if (nextPhase >= 0 && control.millis() >= transitionAt) {
